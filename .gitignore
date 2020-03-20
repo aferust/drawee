@@ -1,0 +1,16 @@
+.dub
+dub.selections.json
+docs.json
+__dummy.html
+docs/
+/srawee
+*.so
+*.dylib
+*.dll
+*.a
+*.lib
+*-test-*
+*.exe
+*.o
+*.obj
+*.lst

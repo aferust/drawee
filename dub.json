@@ -1,0 +1,24 @@
+{
+	"authors": [
+		"user"
+	],
+	"copyright": "Copyright © 2020, user",
+	"dependencies": {
+		"bindbc-opengl": "~>0.10.0",
+		"bindbc-sdl": "~>0.13.0",
+        "dvector": "~>0.0.5",
+        "earcutd": "*"
+	},
+	"description": "A volfied-like game WIP.",
+	"license": "boost",
+    "name": "drawee",
+    "versions": [
+        "GL_31", "GL_AllowDeprecated"
+    ],
+    "dflags": ["-betterC"],
+    "subConfigurations": {
+        "bindbc-sdl": "staticBC",
+        "bindbc-opengl": "dynamicBC"
+    },
+    "libs": ["SDL2"]
+}

@@ -1,5 +1,7 @@
 module globals;
 
+import std.typecons;
+
 import bindbc.sdl;
 import bindbc.opengl;
 import dvector;
@@ -37,11 +39,12 @@ __gshared {
     ubyte* keystate;
     
     Hero hero;
-    Enemy enemy;
+    Dvector!Enemy enemies;
 
     Dvector!Point rail;
     Dvector!size_t triangles;
     Dvector!Point pVertices;
+    Dvector!(Tuple!(Point, Point)) deathTrace;
     Dvector!(cpShape*) walls;
 
     Dvector!(Action!Point) actions;

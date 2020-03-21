@@ -4,7 +4,9 @@ import core.stdc.math: powf, sqrtf;
 
 import std.math;
 import std.range;
+import std.typecons;
 
+import bindbc.sdl;
 import dvector;
 
 import globals;
@@ -127,19 +129,46 @@ bool inPoly(P, R)(P point, ref R Rail){
     return false;
 }
 
-/*
-auto splice2(Arr)(ref Arr oarr, size_t start, size_t n){
-    Arr narr;
-    
-    foreach(i; start..start+n)
-        narr.pushBack(oarr[i]);
-    foreach(i; 0..n){
-        oarr.remove(start);
-    }
-    return narr;
-}
-*/
-
 float dist(P)(P start, P end) pure {
     return sqrtf(powf(start.x - end.x, 2) + powf(start.y - end.y, 2));
+}
+
+bool isEnemyOnTheTrace(SDL_Rect rect, ref Dvector!(Tuple!(Point, Point)) lines){
+    foreach(i; 0..lines.length){
+        if(lineIntersectsRect(lines[i][0], lines[i][1], rect)){
+            return true;
+        }
+    }
+    return false;
+}
+bool lineIntersectsRect(Point p1, Point p2, SDL_Rect r){
+    auto sdlp1 = SDL_Point(p1.x, p1.y);
+    auto sdlp2 = SDL_Point(p2.x, p2.y);
+    return lineIntersectsLine(p1, p2, Point(r.x, r.y), Point(r.x + r.w, r.y)) ||
+            lineIntersectsLine(p1, p2, Point(r.x + r.w, r.y), Point(r.x + r.w, r.y + r.h)) ||
+            lineIntersectsLine(p1, p2, Point(r.x + r.w, r.y + r.h), Point(r.x, r.y + r.h)) ||
+            lineIntersectsLine(p1, p2, Point(r.x, r.y + r.h), Point(r.x, r.y)) ||
+            (SDL_PointInRect( &sdlp1, &r) && SDL_PointInRect(&sdlp2, &r));
+}
+
+bool lineIntersectsLine(Point l1p1, Point l1p2, Point l2p1, Point l2p2){
+    auto q = (l1p1.y - l2p1.y) * (l2p2.x - l2p1.x) - (l1p1.x - l2p1.x) * (l2p2.y - l2p1.y);
+    auto d = (l1p2.x - l1p1.x) * (l2p2.y - l2p1.y) - (l1p2.y - l1p1.y) * (l2p2.x - l2p1.x);
+
+    if( d == 0 )
+    {
+        return false;
+    }
+
+    const r = q / d;
+
+    q = (l1p1.y - l2p1.y) * (l1p2.x - l1p1.x) - (l1p1.x - l2p1.x) * (l1p2.y - l1p1.y);
+    const s = q / d;
+
+    if( r < 0 || r > 1 || s < 0 || s > 1 )
+    {
+        return false;
+    }
+
+    return true;
 }

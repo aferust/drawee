@@ -16,11 +16,13 @@ import std.stdint;
 import bindbc.sdl;
 import bindbc.opengl;
 import dvector;
+import chipmunk;
 
 import globals;
 import boilerplate;
 import primitives;
 import heroimp;
+import enemyimp;
 
 @nogc nothrow:
 
@@ -33,7 +35,9 @@ extern (C) int main() {
 
     glClearColor(1,0,0,1);
     //glClear(GL_COLOR_BUFFER_BIT);
-    
+
+    space = cpSpaceNew();
+
     hero = Hero(Point(SCREEN_WIDTH/2, SCREEN_HEIGHT));
     rail.pushBack(Point(0, 0));
     rail.pushBack(Point(0, SCREEN_HEIGHT));
@@ -41,6 +45,15 @@ extern (C) int main() {
     rail.pushBack(Point(SCREEN_WIDTH, 0));
 
     updateTriangles();
+    updateWalls();
+
+    auto ch = cpSpaceAddCollisionHandler(space, COLLISION_TYPE_STATIC, COLLISION_TYPE_DYNAMIC);
+    ch.beginFunc = &collisionBegin;
+    ch.postSolveFunc = &collisionPost;
+    ch.preSolveFunc = &collisionPre;
+    ch.separateFunc = &collisionSeparate;
+
+    Enemy enm = Enemy(ENEMY_SIZE, Point(150, 150));
 
 	bool quit;
 
@@ -51,6 +64,7 @@ extern (C) int main() {
     keystate = SDL_GetKeyboardState(null);
     
     double heroDelayer = 0.0;
+    double enemyDelayer = 0.0;
 
     SDL_Event event;
     while (!quit){
@@ -83,6 +97,17 @@ extern (C) int main() {
             heroDelayer = 0.0;
         }
         
+        //enemyDelayer += dt;
+        //if(enemyDelayer > 0.018){
+            
+            cpSpaceStep(space, cast(float)dt*1000);
+            enm.update();
+
+        //    enemyDelayer = 0.0;
+        //}
+
+        filledCircle(enm.pos.x, enm.pos.y, ENEMY_SIZE, Color!float(1.0f, 0.0f, 0.0f));
+
         SDL_GL_SwapWindow(window);
     }
 
@@ -226,6 +251,7 @@ void moveOnTraceBack(){
 void doNewRail(){
     processRail();
     updateTriangles();
+    updateWalls();
     /*
     var percent = Math.round(100-100*this.currentArea/this.totalArea);
     if(percent >= 80 && this.won == false){
@@ -327,4 +353,60 @@ void processRail(){
     this.updateWalls();
     this.currentArea = Math.abs(polygonArea(rail));
     */
+}
+
+void updateWalls(){
+    // clear old walls
+    auto ln = walls.length;
+    while (ln--) {
+        if(cpShapeGetCollisionType(walls[ln]) == COLLISION_TYPE_STATIC){
+            if(cpSpaceContainsShape(space, walls[ln])){
+                cpSpaceRemoveShape(space, walls[ln]);
+                walls[ln] = null;
+                walls.remove(ln);
+            } 
+        }
+    }
+
+    // clear old obstacles
+    // this.clearObstacles();
+
+    // create new walls
+    auto len = rail.length;
+    auto staticBody = cpSpaceGetStaticBody(space);
+    for(auto i=0; i<len-1; i++){
+        auto a_wall = cpSegmentShapeNew(staticBody, cpVect(rail[i].x, rail[i].y), cpVect(rail[i+1].x, rail[i+1].y), 10);
+        cpShapeSetCollisionType(a_wall, COLLISION_TYPE_STATIC);
+        cpShapeSetElasticity(a_wall, WALLS_ELASTICITY);
+        cpShapeSetFriction(a_wall, WALLS_FRICTION);
+        
+        walls.pushBack(a_wall);
+        cpSpaceAddShape(space, a_wall);
+    }
+    auto last_wall = cpSegmentShapeNew(staticBody, cpVect(rail[len-1].x, rail[len-1].y), cpVect(rail[0].x, rail[0].y), 10);
+    
+    cpShapeSetCollisionType(last_wall, COLLISION_TYPE_STATIC);
+    cpShapeSetElasticity(last_wall, WALLS_ELASTICITY);
+    cpShapeSetFriction(last_wall, WALLS_FRICTION);
+    walls.pushBack(last_wall);
+    cpSpaceAddShape(space, last_wall);
+
+    // create new obstacles
+    // this.spawnObstacles();
+
+    // this.killCapturedEnemies();
+}
+nothrow @nogc extern (C){
+    ubyte collisionBegin(cpArbiter* arbiter, cpSpace* space, void* data){
+        cpShape* a, b;
+        cpArbiterGetShapes(arbiter, &a, &b);
+        
+        if (a.filter.group == 1 && b.filter.group == 1)
+            return false;
+            
+        return true;
+    }
+    ubyte collisionPre(cpArbiter* arbiter, cpSpace* space, void* data){return true;}
+    void collisionPost(cpArbiter* arbiter, cpSpace* space, void* data){}
+    void collisionSeparate(cpArbiter* arbiter, cpSpace* space, void* data){}
 }

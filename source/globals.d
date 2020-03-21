@@ -50,6 +50,8 @@ __gshared {
     Dvector!(Action!Point) actions;
     
     cpSpace* space;
+
+    bool won;
 }
 
 enum {

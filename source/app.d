@@ -89,7 +89,9 @@ extern (C) int main() {
         drawRail();
         drawHero();
 
-        if(hero.alive == true && hero.heroStat != dead) dieIfCollide();
+        if(hero.alive == true && hero.heroStat != dead)
+            dieIfCollide();
+        
         drawForwardTrace();
         drawBackwardTrace();
 
@@ -401,7 +403,7 @@ void updateWalls(){
     // create new obstacles
     // this.spawnObstacles();
 
-    // this.killCapturedEnemies();
+    killCapturedEnemies();
 }
 nothrow @nogc extern (C){
     ubyte collisionBegin(cpArbiter* arbiter, cpSpace* space, void* data){
@@ -454,3 +456,27 @@ bool dieIfCollide(){
     }
     return false;
 }
+
+void killCapturedEnemies(){
+        import gamemath;
+        if(enemies.length){
+            auto ln = enemies.length;
+            while (ln--) {
+                const pos = enemies[ln].pos;
+                if(!isPointInPolygon(pos, rail)){
+                    if(cpSpaceContainsShape(space, enemies[ln].shape)){
+                        cpSpaceRemoveBody(space, enemies[ln]._body);
+                        cpSpaceRemoveShape(space, enemies[ln].shape);
+                        enemies.remove(ln, 1);
+
+                        // makePuff(pos);
+                    }
+                }
+            }
+            if(!enemies.length && !won){
+                won = true;
+                //winLevel();
+                printf("You won!");
+            } 
+        }
+    }

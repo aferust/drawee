@@ -306,7 +306,7 @@ void processRail(){
         // but they are not problem.
         
         if(start_ind < end_ind){
-            printf("duz \n".ptr);
+            //printf("duz \n".ptr);
 
             auto altRail = rail.splice(start_ind+1, end_ind - start_ind);
 
@@ -328,7 +328,7 @@ void processRail(){
                 altRail.free;
             
         }else{
-            printf("ters \n".ptr);
+            //printf("ters \n".ptr);
             
             auto altRail = rail.splice(end_ind + 1, start_ind - end_ind);
 
@@ -360,8 +360,11 @@ void processRail(){
     /*
     this.draw_rail();
     this.updateWalls();
-    this.currentArea = Math.abs(polygonArea(rail));
     */
+    
+    currentArea = fabs(polygonArea(rail));
+    printf("%.2f%% \n", 100.0f*(1.0f - (currentArea / totalArea)));
+
 }
 
 void updateWalls(){

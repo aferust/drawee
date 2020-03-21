@@ -15,8 +15,9 @@ __gshared {
     SDL_GLContext glcontext;
     SDL_Window *window;
 
-    int SCREEN_WIDTH  = 800;
-    int SCREEN_HEIGHT = 600;
+    enum SCREEN_WIDTH  = 800;
+    enum SCREEN_HEIGHT = 600;
+    enum totalArea = SCREEN_WIDTH * SCREEN_HEIGHT;
 
     float b_width = 19.0f;
     int grid_size = 5;
@@ -51,6 +52,7 @@ __gshared {
     
     cpSpace* space;
 
+    float currentArea;
     bool won;
 }
 

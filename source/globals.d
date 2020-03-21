@@ -6,6 +6,7 @@ import dvector;
 import chipmunk;
 
 import heroimp;
+import enemyimp;
 import tween;
 
 __gshared {
@@ -36,6 +37,7 @@ __gshared {
     ubyte* keystate;
     
     Hero hero;
+    Enemy enemy;
 
     Dvector!Point rail;
     Dvector!size_t triangles;

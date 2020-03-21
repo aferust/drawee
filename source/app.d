@@ -53,7 +53,7 @@ extern (C) int main() {
     ch.preSolveFunc = &collisionPre;
     ch.separateFunc = &collisionSeparate;
 
-    Enemy enm = Enemy(ENEMY_SIZE, Point(150, 150));
+    enemy = Enemy(ENEMY_SIZE, Point(150, 150));
 
 	bool quit;
 
@@ -96,17 +96,11 @@ extern (C) int main() {
             proceedActions(dt);
             heroDelayer = 0.0;
         }
-        
-        //enemyDelayer += dt;
-        //if(enemyDelayer > 0.018){
             
-            cpSpaceStep(space, cast(float)dt*1000);
-            enm.update();
+        cpSpaceStep(space, cast(float)dt*1000);
+        enemy.update();
 
-        //    enemyDelayer = 0.0;
-        //}
-
-        filledCircle(enm.pos.x, enm.pos.y, ENEMY_SIZE, Color!float(1.0f, 0.0f, 0.0f));
+        drawEnemies();
 
         SDL_GL_SwapWindow(window);
     }
@@ -137,6 +131,11 @@ void drawHero() {
     filledCircle(hero.pos.x, hero.pos.y, cast(int)(b_width/2), Color!float(0,0,1));
     if(hero.heroStat == movingOntheRail)
         hollowCircle(hero.pos.x, hero.pos.y, cast(int)(8 + b_width/2), Color!float(0,1,0));
+}
+
+void drawEnemies(){
+    // TODO: spawn more enemies
+    filledCircle(enemy.pos.x, enemy.pos.y, ENEMY_SIZE, Color!float(0.0f, 0.0f, 0.0f));
 }
 
 void updateTriangles(){

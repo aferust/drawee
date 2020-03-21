@@ -363,8 +363,14 @@ void processRail(){
     */
     
     currentArea = fabs(polygonArea(rail));
-    printf("%.2f%% \n", 100.0f*(1.0f - (currentArea / totalArea)));
-
+    float rate = currentArea / totalArea;
+    printf("%.2f%% \n", 100.0f*(1.0f - rate));
+    /*
+    if(1-rate >= 0.8f){
+        enemies.clear();
+        printf("You won!");
+    }
+    */
 }
 
 void updateWalls(){

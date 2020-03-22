@@ -48,7 +48,7 @@ void hollowCircle(GLfloat x, GLfloat y, GLfloat radius, Color!float cl){
 	glEnd();
 }
 
-void drawRail(){
+void drawPolygon(){
     glClear( GL_COLOR_BUFFER_BIT );
     glBegin(GL_TRIANGLES);
         glColor3f(1.0f, 1.0f, 1.0f);

@@ -19,7 +19,7 @@ __gshared {
     enum SCREEN_HEIGHT = 600;
     enum totalArea = SCREEN_WIDTH * SCREEN_HEIGHT;
 
-    float b_width = 19.0f;
+    enum HERO_RADIUS = 9.5f;
     int grid_size = 5;
 }
 
@@ -64,4 +64,4 @@ enum {
 enum WALLS_ELASTICITY = 1;
 enum WALLS_FRICTION = 1;
 
-enum ENEMY_SIZE = 15;
+enum ENEMY_RADIUS = 15;

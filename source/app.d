@@ -22,7 +22,7 @@ import chipmunk;
 
 import globals;
 import boilerplate;
-import primitives;
+import drawobjects;
 import heroimp;
 import enemyimp;
 
@@ -55,8 +55,8 @@ extern (C) int main() {
     ch.preSolveFunc = &collisionPre;
     ch.separateFunc = &collisionSeparate;
 
-    enemies ~= Enemy(ENEMY_SIZE, Point(150, 150));
-    enemies ~= Enemy(ENEMY_SIZE, Point(200, 150));
+    enemies ~= Enemy(ENEMY_RADIUS*2, Point(150, 150), cpVect(0.2, 0.4));
+    enemies ~= Enemy(ENEMY_RADIUS*2, Point(200, 150), cpVect(0.4, 0.2));
 
 	bool quit;
 
@@ -121,33 +121,6 @@ extern (C) int main() {
     return 0;
 }
 
-void proceedActions(double dt) {
-    if(actions.length && actions[actions.length-1].done)
-        actions.free;
-    else {
-        foreach(i; 0..actions.length){
-            if(!actions[i].done && actions[i].started) {
-                actions[i].update(dt);
-                if(actions[i].runaction is null) hero.pos = actions[i].current;
-                if(actions[i].done && actions.length > i+1)
-                    actions[i+1].started = true;
-            }
-        }
-    }
-}
-
-void drawHero() {
-    filledCircle(hero.pos.x, hero.pos.y, cast(int)(b_width/2), Color!float(0,0,1));
-    if(hero.heroStat == movingOntheRail)
-        hollowCircle(hero.pos.x, hero.pos.y, cast(int)(8 + b_width/2), Color!float(0,1,0));
-}
-
-void drawEnemies(){
-    // TODO: spawn more enemies
-    foreach (ref enemy; enemies)
-        filledCircle(enemy.pos.x, enemy.pos.y, ENEMY_SIZE, Color!float(0.0f, 0.0f, 0.0f));
-}
-
 void updateTriangles(){
     
     alias Point = Tuple!(int, int);
@@ -169,59 +142,6 @@ void updateTriangles(){
     earcut.indices.free;
     p1.free;
     polygon.free;
-}
-
-void drawForwardTrace() {
-    if(hero.heroStat == cutting && hero.alive){
-        deathTrace.clear();
-
-        const len = pVertices.length;
-        const color = Color!float(1,0,0);
-        if(len==1){
-            auto start_point = pVertices[0];
-            line(start_point, hero.pos, color);
-            
-            deathTrace.pushBack(tuple(start_point, hero.pos));
-
-        }else if(len>1){
-            for(size_t i = 0; i<len-1; i++){
-                line(pVertices[i], pVertices[i+1], color);
-                deathTrace.pushBack(tuple(pVertices[i], pVertices[i+1]));
-            }
-            line(pVertices[len-1], hero.pos, color);
-            deathTrace.pushBack(tuple(pVertices[len-1], hero.pos));
-        }
-        
-    }
-}
-
-void drawBackwardTrace() {
-    import gamemath;
-
-    if(hero.heroStat == goingBack && hero.alive){
-        const size_t len = pVertices.length;
-        size_t ind = 0;
-        const color = Color!float(0,1,0);
-        if(len==1){
-            line(pVertices[0], hero.pos, color);
-        }else if(len>1){
-            for(auto i = 0; i<len-1; i++){
-                if (!isPointOntheTrace(pVertices, hero.pos)){
-                    line(pVertices.back, hero.pos, color);
-                    ind = len;
-                    break;
-                }else if (isPointInSegment(pVertices[i], pVertices[i+1], hero.pos )){
-                    line(pVertices[i], hero.pos, color);
-                    ind = i+1;
-                    break;
-                    
-                }
-            }
-            while(ind--)
-                if(ind != 0)
-                    line(pVertices[ind], pVertices[ind-1], color);
-        }
-    }
 }
 
 void fix() @nogc nothrow{
@@ -414,78 +334,6 @@ void updateWalls(){
 
     killCapturedEnemies();
 }
-nothrow @nogc extern (C){
-    ubyte collisionBegin(cpArbiter* arbiter, cpSpace* space, void* data){
-        cpShape* a, b;
-        cpArbiterGetShapes(arbiter, &a, &b);
-        
-        if (a.filter.group == 1 && b.filter.group == 1)
-            return false;
-            
-        return true;
-    }
-    ubyte collisionPre(cpArbiter* arbiter, cpSpace* space, void* data){return true;}
-    void collisionPost(cpArbiter* arbiter, cpSpace* space, void* data){}
-    void collisionSeparate(cpArbiter* arbiter, cpSpace* space, void* data){}
-}
 
-bool dieIfCollide(){
-    import gamemath;
-    if(enemies.length && hero.alive == true && (hero.heroStat == cutting || hero.heroStat == goingBack)){
-        auto ln = enemies.length;
-        while (ln--) {
-            const eRect = SDL_Rect(enemies[ln].pos.x, enemies[ln].pos.y, ENEMY_SIZE, ENEMY_SIZE);
-            const hRect = SDL_Rect(hero.pos.x, hero.pos.y, cast(int)b_width, cast(int)b_width);
-            auto pos = hero.pos;
-            
-            bool hero_collide = hero.alive == true && SDL_IntersectRect(&eRect, &hRect, null) && !isPointOntheRail(rail, pos);
-            bool trace_collide = hero.alive == true && isEnemyOnTheTrace(eRect, deathTrace);
-            //if( MG.heroStat == 'goingBack') MG.pVertices = MG.pVertices.reverse();
-            if((hero_collide || trace_collide) && hero.heroStat != dead && pVertices.length > 0){
-                hero.alive = false; hero.heroStat = dead;
-                /*
-                this.d_node_bt.clear();
-                this.d_node_ft.clear();
-                this.makePuff(pos);
-                */
-                
-                actions.clear(); // this.mhero.stopActionByTag(999);
-                
-                auto first = makeAction(hero.pos, pVertices[0], cast(int)dist(hero.pos, pVertices[0])/5);
-                first.started = true;
-                actions.pushBack(first);
-                auto last = makeAction(&fix);
-        
-                actions.pushBack(last);
-                //MG.KEYS["32"] = false;
-                
-                return true;
-            }
-        }
-    }
-    return false;
-}
 
-void killCapturedEnemies(){
-        import gamemath;
-        if(enemies.length){
-            auto ln = enemies.length;
-            while (ln--) {
-                const pos = enemies[ln].pos;
-                if(!isPointInPolygon(pos, rail)){
-                    if(cpSpaceContainsShape(space, enemies[ln].shape)){
-                        cpSpaceRemoveBody(space, enemies[ln]._body);
-                        cpSpaceRemoveShape(space, enemies[ln].shape);
-                        enemies.remove(ln, 1);
 
-                        // makePuff(pos);
-                    }
-                }
-            }
-            if(!enemies.length && !won){
-                won = true;
-                //winLevel();
-                printf("You won!");
-            } 
-        }
-    }

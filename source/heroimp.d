@@ -8,6 +8,7 @@ import bindbc.sdl;
 
 import globals;
 import gamemath;
+import tween;
 import app;
 
 enum : uint {
@@ -115,4 +116,43 @@ struct Hero {
         }
 
     }
+}
+
+@nogc nothrow:
+
+bool dieIfCollide(){
+    import gamemath;
+    if(enemies.length && hero.alive == true && (hero.heroStat == cutting || hero.heroStat == goingBack)){
+        auto ln = enemies.length;
+        while (ln--) {
+            const eRect = SDL_Rect(enemies[ln].pos.x - ENEMY_RADIUS, enemies[ln].pos.y - ENEMY_RADIUS, ENEMY_RADIUS*2, ENEMY_RADIUS*2);
+            const hRect = SDL_Rect(cast(int)(hero.pos.x - HERO_RADIUS*2), cast(int)(hero.pos.y - HERO_RADIUS*2), cast(int)HERO_RADIUS*2, cast(int)HERO_RADIUS*2);
+            auto pos = hero.pos;
+            
+            bool hero_collide = hero.alive == true && SDL_IntersectRect(&eRect, &hRect, null) && !isPointOntheRail(rail, pos);
+            bool trace_collide = hero.alive == true && isEnemyOnTheTrace(eRect, deathTrace);
+            //if( MG.heroStat == 'goingBack') MG.pVertices = MG.pVertices.reverse();
+            if((hero_collide || trace_collide) && hero.heroStat != dead && pVertices.length > 0){
+                hero.alive = false; hero.heroStat = dead;
+                /*
+                this.d_node_bt.clear();
+                this.d_node_ft.clear();
+                this.makePuff(pos);
+                */
+                
+                actions.clear(); // this.mhero.stopActionByTag(999);
+                
+                auto first = makeAction(hero.pos, pVertices[0], cast(int)dist(hero.pos, pVertices[0])/5);
+                first.started = true;
+                actions.pushBack(first);
+                auto last = makeAction(&fix);
+        
+                actions.pushBack(last);
+                //MG.KEYS["32"] = false;
+                
+                return true;
+            }
+        }
+    }
+    return false;
 }

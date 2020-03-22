@@ -6,13 +6,6 @@ import std.traits;
 
 import globals;
 
-@nogc nothrow:
-
-auto makeAction(P = Point, Args...)(Args args){
-    static if(args.length)
-        return Action!P(args);
-}
-
 /+
 An action can be either of a function scheduler or a linear point traveller at given steps
 depending on constructor used.
@@ -70,6 +63,28 @@ struct Action(P) {
         if(counter == steps){
             current = end;
             done = true;
+        }
+    }
+}
+
+@nogc nothrow:
+
+auto makeAction(P = Point, Args...)(Args args){
+    static if(args.length)
+        return Action!P(args);
+}
+
+void proceedActions(double dt) {
+    if(actions.length && actions[actions.length-1].done)
+        actions.free;
+    else {
+        foreach(i; 0..actions.length){
+            if(!actions[i].done && actions[i].started) {
+                actions[i].update(dt);
+                if(actions[i].runaction is null) hero.pos = actions[i].current;
+                if(actions[i].done && actions.length > i+1)
+                    actions[i+1].started = true;
+            }
         }
     }
 }

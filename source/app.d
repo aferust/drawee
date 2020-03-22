@@ -56,7 +56,7 @@ extern (C) int main() {
     ch.separateFunc = &collisionSeparate;
 
     enemies ~= Enemy(ENEMY_RADIUS, Point(150, 150), cpVect(0.2, 0.4));
-    //enemies ~= Enemy(ENEMY_RADIUS, Point(200, 150), cpVect(0.4, 0.2));
+    enemies ~= Enemy(ENEMY_RADIUS, Point(200, 150), cpVect(0.4, 0.2));
 
 	bool quit;
 

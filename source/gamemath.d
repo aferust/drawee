@@ -132,60 +132,71 @@ bool inPoly(P, R)(P point, ref R Rail){
 float dist(P)(P start, P end) pure {
     return sqrtf(powf(start.x - end.x, 2) + powf(start.y - end.y, 2));
 }
-/*
-bool isEnemyOnTheTrace(SDL_Rect rect, ref Dvector!(Tuple!(Point, Point)) lines){
-    foreach(i; 0..lines.length){
-        if(lineIntersectsRect(lines[i][0], lines[i][1], rect)){
-            return true;
-        }
-    }
-    return false;
-}
-*/
 
-bool isEnemyOnTheTrace(Circle c, ref Dvector!(Tuple!(Point, Point)) lines){
+bool isEnemyOnTheTrace(const Circle c, ref Dvector!(Tuple!(Point, Point)) lines) pure {
     foreach(i; 0..lines.length){
         immutable l1 = lines[i][0];
         immutable l2 = lines[i][1];
-        immutable ret = (fabs((l2.y - l1.y)*c.pos.x +  c.pos.y*(l1.x -     
-        l2.x) + (l1.y - l2.y)*l1.x +
-        (l1.x - l2.x)*l1.y)/ sqrtf(powf(l2.y - l1.y, 2) +
-        powf(l1.x - l2.x, 2)) <= c.radius);
+        immutable ret = islineCircleCollision(
+                                cast(float)l1.x, cast(float)l1.y,
+                                cast(float)l2.x, cast(float)l2.y,
+                                cast(float)c.pos.x, cast(float)c.pos.y, cast(float)c.radius);
         if(ret) return true;
     }
     return false;
 }
 
-bool lineIntersectsRect(Point p1, Point p2, SDL_Rect r) pure {
-    auto sdlp1 = SDL_Point(p1.x, p1.y);
-    auto sdlp2 = SDL_Point(p2.x, p2.y);
-    return lineIntersectsLine(p1, p2, Point(r.x, r.y), Point(r.x + r.w, r.y)) ||
-            lineIntersectsLine(p1, p2, Point(r.x + r.w, r.y), Point(r.x + r.w, r.y + r.h)) ||
-            lineIntersectsLine(p1, p2, Point(r.x + r.w, r.y + r.h), Point(r.x, r.y + r.h)) ||
-            lineIntersectsLine(p1, p2, Point(r.x, r.y + r.h), Point(r.x, r.y)) ||
-            (SDL_PointInRect( &sdlp1, &r) && SDL_PointInRect(&sdlp2, &r));
+private {
+bool islineCircleCollision(in float x1, in float y1, in float x2, in float y2, in float cx, in float cy, in float r) pure {
+    bool inside1 = pointCircle(x1,y1, cx,cy,r);
+    bool inside2 = pointCircle(x2,y2, cx,cy,r);
+    if (inside1 || inside2)
+        return true;
+
+    float distX = x1 - x2;
+    float distY = y1 - y2;
+    float len = sqrtf( (distX*distX) + (distY*distY) );
+
+    float dot = ( ((cx-x1)*(x2-x1)) + ((cy-y1)*(y2-y1)) ) / (len*len);
+
+    float closestX = x1 + (dot * (x2-x1));
+    float closestY = y1 + (dot * (y2-y1));
+
+    bool onSegment = linePoint(x1, y1, x2, y2, closestX, closestY);
+    if (!onSegment)
+        return false;
+
+    distX = closestX - cx;
+    distY = closestY - cy;
+    float distance = sqrtf( (distX*distX) + (distY*distY) );
+
+    if (distance <= r)
+        return true;
+    return false;
 }
 
-bool lineIntersectsLine(Point l1p1, Point l1p2, Point l2p1, Point l2p2) pure {
-    auto q = (l1p1.y - l2p1.y) * (l2p2.x - l2p1.x) - (l1p1.x - l2p1.x) * (l2p2.y - l2p1.y);
-    auto d = (l1p2.x - l1p1.x) * (l2p2.y - l2p1.y) - (l1p2.y - l1p1.y) * (l2p2.x - l2p1.x);
+bool pointCircle(in float px, in float py, in float cx, in float cy, in float r) pure {
+    float distX = px - cx;
+    float distY = py - cy;
+    float distance = sqrtf( (distX*distX) + (distY*distY) );
 
-    if( d == 0 )
-    {
-        return false;
-    }
+    if (distance <= r)
+        return true;
+    return false;
+}
 
-    const r = q / d;
+bool linePoint(in float x1, in float y1, in float x2, in float y2, in float px, in float py) pure {
+    float d1 = sqrtf(cast(float)(powf(px-x1, 2) + powf(py-y1, 2)));
+    float d2 = sqrtf(cast(float)(powf(px-x2, 2) + powf(py-y2, 2)));
 
-    q = (l1p1.y - l2p1.y) * (l1p2.x - l1p1.x) - (l1p1.x - l2p1.x) * (l1p2.y - l1p1.y);
-    const s = q / d;
+    float lineLen = sqrtf(cast(float)(powf(x1-x2, 2) + powf(y1-y2, 2)));
 
-    if( r < 0 || r > 1 || s < 0 || s > 1 )
-    {
-        return false;
-    }
+    float buffer = 0.1;
 
-    return true;
+    if (d1 + d2 >= lineLen-buffer && d1+d2 <= lineLen + buffer)
+        return true;
+    return false;
+}
 }
 
 bool collides(Circle circle1, Circle circle2) pure {

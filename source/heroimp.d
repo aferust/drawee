@@ -9,7 +9,7 @@ import bindbc.sdl;
 import globals;
 import gamemath;
 import tween;
-import app;
+import railimp;
 
 enum : uint {
     movingOntheRail,
@@ -169,4 +169,35 @@ bool dieIfCollide(){
         }
     }
     return false;
+}
+
+void moveOnTraceBack(){
+    import gamemath;
+
+    hero.heroStat = goingBack;
+    if(pVertices.length>0){
+        //hero.pos = pVertices[0];
+        auto first = makeAction(hero.pos, pVertices[pVertices.length-1], cast(int)dist(hero.pos, pVertices[pVertices.length-1])/5);
+        first.started = true;
+        actions.pushBack(first);
+        foreach_reverse(i; 1..pVertices.length){
+            actions.pushBack(makeAction(pVertices[i], pVertices[i-1], cast(int)dist(pVertices[i], pVertices[i-1])/5));
+        }
+        
+        auto last = makeAction(&fix);
+        
+        actions.pushBack(last);
+    }
+}
+
+void fix() {
+    
+    //this.d_node_bt.clear();
+    hero.direction = none;// cook onemli
+    hero.heroStat = movingOntheRail;
+    if(hero.pos != pVertices[0])
+        hero.pos = pVertices[0]; 
+    pVertices.free;
+    if(!hero.alive)
+        hero.alive = true;
 }

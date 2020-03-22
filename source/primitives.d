@@ -72,3 +72,13 @@ void line(Point p1, Point p2, Color!float cl){
         _glVertex2f(p2.x, p2.y);
     glEnd();
 }
+
+void drawRect(Rect r, Color!float cl){
+    glBegin(GL_QUADS);
+        glColor3d(cl.r, cl.g, cl.b);
+        _glVertex2f(r.x, r.y);
+        _glVertex2f(r.x+r.w, r.y);
+        _glVertex2f(r.x+r.w, r.y+r.h);
+        _glVertex2f(r.x, r.y+r.h);
+    glEnd();
+}

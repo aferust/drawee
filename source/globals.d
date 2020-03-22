@@ -9,6 +9,7 @@ import chipmunk;
 
 import heroimp;
 import enemyimp;
+import obstacleimp;
 import tween;
 
 __gshared {
@@ -41,6 +42,15 @@ struct Color(T){
     T r, g, b;
 }
 
+// need only for obstacles
+struct Rect {
+    int x, y, w, h;
+    
+    @nogc nothrow Point diag(){
+        return Point(x+w, y+h);
+    }
+}
+
 __gshared {
     ubyte* keystate;
     
@@ -52,6 +62,7 @@ __gshared {
     Dvector!Point pVertices;
     Dvector!(Tuple!(Point, Point)) deathTrace;
     Dvector!(cpShape*) walls;
+    Dvector!Obstacle obstacles;
 
     Dvector!(Action!Point) actions;
     

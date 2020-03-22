@@ -25,6 +25,7 @@ import boilerplate;
 import drawobjects;
 import heroimp;
 import enemyimp;
+import obstacleimp;
 
 @nogc nothrow:
 
@@ -58,6 +59,8 @@ extern (C) int main() {
     enemies ~= Enemy(ENEMY_RADIUS, Point(150, 150), cpVect(0.2, 0.4));
     enemies ~= Enemy(ENEMY_RADIUS, Point(200, 150), cpVect(0.4, 0.2));
 
+    obstacles ~= Obstacle(Point(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), 60, 60);
+
 	bool quit;
 
     uint64_t now = SDL_GetPerformanceCounter();
@@ -88,6 +91,7 @@ extern (C) int main() {
         
         drawRail();
         drawHero();
+        drawObstacles();
 
         if(hero.alive == true && hero.heroStat != dead)
             dieIfCollide();
@@ -114,6 +118,9 @@ extern (C) int main() {
         SDL_GL_SwapWindow(window);
     }
 
+    clearObstacles();
+    clearEnemies();
+    
     SDL_GL_DeleteContext(glcontext);
     SDL_DestroyWindow(window);
     SDL_Quit();

@@ -56,25 +56,25 @@ struct Hero {
             /* We will check if half of the grid_size falls in polygon to be sure that thin walls are not being cut wrongly*/
             if(keystate[SDL_SCANCODE_DOWN] && pos.y <= SCREEN_HEIGHT && isPointInPolygon(Point(pos.x,pos.y+grid_size/2), rail)){
                 pos.y += s;
-                if( direction != down /*&& !this.isPosInObstacles(roundPoint(pos, grid_size))*/) {
+                if( direction != down && !isPosInObstacles(roundPoint(pos, grid_size))) {
                     pVertices.pushBack(pos_);
                     direction = down; 
                 }
             }else if(keystate[SDL_SCANCODE_UP] && pos.y >= 0 && isPointInPolygon(Point(pos.x,pos.y-grid_size/2), rail)) {
                 pos.y -=  s;
-                if( direction != up /*&& !this.isPosInObstacles(roundPoint(pos, grid_size))*/) {
+                if( direction != up && !isPosInObstacles(roundPoint(pos, grid_size))) {
                     pVertices.pushBack(pos_);
                     direction = up;
                 } 
             }else if(keystate[SDL_SCANCODE_LEFT] && pos.x >= 0 && isPointInPolygon(Point(pos.x-grid_size/2,pos.y), rail)) {
                 pos.x -=  s;
-                if( direction != left /*&& !this.isPosInObstacles(roundPoint(pos, grid_size))*/) {
+                if( direction != left && !isPosInObstacles(roundPoint(pos, grid_size))) {
                     pVertices.pushBack(pos_);
                     direction = left;
                 }
             }else if(keystate[SDL_SCANCODE_RIGHT] && pos.x <= SCREEN_WIDTH && isPointInPolygon(Point(pos.x+grid_size/2,pos.y), rail)) {
                 pos.x +=  s;
-                if( direction != right /* && !this.isPosInObstacles(roundPoint(pos, grid_size))*/) {
+                if( direction != right && !isPosInObstacles(roundPoint(pos, grid_size))) {
                     pVertices.pushBack(pos_);
                     direction = right;
                 } 
@@ -85,22 +85,12 @@ struct Hero {
             }else
 
             if(isPointInPolygon(pos, rail) && heroStat != dead && heroStat != goingBack){
-                if (!isPointOntheTrace( pVertices, pos)/* && !this.isPosInObstacles(roundPoint(pos, grid_size))*/ ){
+                if (!isPointOntheTrace( pVertices, pos) && !isPosInObstacles(roundPoint(pos, grid_size)) ){
                     heroStat = cutting;
-                    //pos = roundPoint(pos, grid_size);// I am not sure if round is needed here
-                    //direction = none;
-                    
-                    /*
-                    var isThinWall = false;
-                    if (MG.pVertices.length > 0 && cc.pDistance(MG.pVertices[MG.pVertices.length-1], roundPoint(pos, grid_size)) <= grid_size){
-                        isThinWall = true; // hope this will resolve thin walls issue
-                    }
-                    */
                 }else
                     pos = pos_;
             }
             if(heroStat == cutting && isPointOntheRail(rail, pos)){
-                //doNewRail(); //??? js de bu var
                 keystate[SDL_SCANCODE_SPACE] = false;
                 doNewRail();
                 heroStat = movingOntheRail;
@@ -123,6 +113,24 @@ struct Hero {
         }
 
     }
+
+    bool isPosInObstacles(Point pos){
+        auto len = obstacles.length;
+        foreach(i; 0..len){
+            auto rect = obstacles[i].rect;
+            enum offset = 5; // offset is not a must. just looks better
+            Point[4] rect_with_offset = [Point(rect.x-offset, rect.y-offset),
+                                        Point(rect.x+rect.w+offset, rect.y-offset),
+                                        Point(rect.x+rect.w+offset, rect.y+rect.h+offset),
+                                        Point(rect.x-offset, rect.y+rect.h+offset)
+                                        ];
+            
+            if(isPointInPolygon(pos, rect_with_offset))
+                return true;
+        }
+        return false;
+    }
+
 }
 
 @nogc nothrow:
@@ -140,16 +148,13 @@ bool dieIfCollide(){
             if(hero_collide) printf("hero_collide \n".ptr);
             if(trace_collide) printf("trace_collide \n".ptr);
             
-            //if( MG.heroStat == 'goingBack') MG.pVertices = MG.pVertices.reverse();
             if((hero_collide || trace_collide) && hero.heroStat != dead && pVertices.length > 0){
                 hero.alive = false; hero.heroStat = dead;
                 /*
-                this.d_node_bt.clear();
-                this.d_node_ft.clear();
                 this.makePuff(pos);
                 */
                 
-                actions.clear(); // this.mhero.stopActionByTag(999);
+                actions.clear();
                 
                 auto first = makeAction(hero.pos, pVertices[0], cast(int)dist(hero.pos, pVertices[0])/5);
                 first.started = true;
@@ -157,7 +162,7 @@ bool dieIfCollide(){
                 auto last = makeAction(&fix);
         
                 actions.pushBack(last);
-                //MG.KEYS["32"] = false;
+                //KEYS[32] = false;
                 
                 return true;
             }

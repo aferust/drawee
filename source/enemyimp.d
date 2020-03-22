@@ -54,7 +54,7 @@ void killCapturedEnemies(){
                 if(cpSpaceContainsShape(space, enemies[ln].shape)){
                     cpSpaceRemoveBody(space, enemies[ln]._body);
                     cpSpaceRemoveShape(space, enemies[ln].shape);
-                    enemies.remove(ln, 1);
+                    enemies.remove(ln);
 
                     // makePuff(pos);
                 }
@@ -67,6 +67,24 @@ void killCapturedEnemies(){
         } 
     }
 }
+
+void clearEnemies(){
+    if(enemies.length){
+        auto ln = enemies.length;
+        while (ln--) {
+            if(cpSpaceContainsShape(space, enemies[ln].shape)){
+                cpSpaceRemoveBody(space, enemies[ln]._body);
+                cpSpaceRemoveShape(space, enemies[ln].shape);
+                
+                auto pos = enemies[ln].pos;
+                enemies.remove(ln);
+
+                // makePuff(pos);
+            } 
+        }
+    }
+}
+
 
 nothrow @nogc extern (C){
     ubyte collisionBegin(cpArbiter* arbiter, cpSpace* space, void* data){

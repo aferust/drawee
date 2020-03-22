@@ -74,3 +74,15 @@ void drawBackwardTrace() {
 void drawRail(){
     drawPolygon();
 }
+
+void drawObstacles(){
+    foreach(ref obstacle; obstacles){
+        auto w = obstacle.rect.w;
+        auto h = obstacle.rect.h;
+        drawRect(obstacle.rect, Color!float(0.5f, 0.2f, 0.6f));
+        line(Point(obstacle.rect.x, obstacle.rect.y),
+            Point(obstacle.rect.diag.x, obstacle.rect.diag.y), Color!float(1.0f, 0.0f, 0.0f));
+        line(Point(obstacle.rect.x+w, obstacle.rect.y),
+            Point(obstacle.rect.x, obstacle.rect.y+h), Color!float(1.0f, 0.0f, 0.0f));
+    }
+}

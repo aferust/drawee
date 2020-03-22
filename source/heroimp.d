@@ -28,12 +28,19 @@ enum : uint { // motion stat
 
 struct Hero {
     Point pos;
+    
     //int speed = 50;
     uint heroStat = movingOntheRail;
     uint direction = none;
     bool alive = true;
 
-    void update(double dt) nothrow @nogc { // delta is not used here for now
+    nothrow @nogc:
+
+    Circle circle() {
+        return Circle(pos, cast(int)HERO_RADIUS);
+    }
+
+    void update(double dt){ // delta is not used here for now
         //if(actions.length)
         //    return;
         //printf("%f \n", dt);
@@ -125,12 +132,14 @@ bool dieIfCollide(){
     if(enemies.length && hero.alive == true && (hero.heroStat == cutting || hero.heroStat == goingBack)){
         auto ln = enemies.length;
         while (ln--) {
-            const eRect = SDL_Rect(enemies[ln].pos.x - ENEMY_RADIUS, enemies[ln].pos.y - ENEMY_RADIUS, ENEMY_RADIUS*2, ENEMY_RADIUS*2);
-            const hRect = SDL_Rect(cast(int)(hero.pos.x - HERO_RADIUS*2), cast(int)(hero.pos.y - HERO_RADIUS*2), cast(int)HERO_RADIUS*2, cast(int)HERO_RADIUS*2);
-            auto pos = hero.pos;
+            auto enemy = enemies[ln];
+
+            bool hero_collide = hero.alive == true && enemy.circle.collides(hero.circle) && !isPointOntheRail(rail, hero.pos);
+            bool trace_collide = hero.alive == true && isEnemyOnTheTrace(enemy.circle, deathTrace);
+
+            if(hero_collide) printf("hero_collide \n".ptr);
+            if(trace_collide) printf("trace_collide \n".ptr);
             
-            bool hero_collide = hero.alive == true && SDL_IntersectRect(&eRect, &hRect, null) && !isPointOntheRail(rail, pos);
-            bool trace_collide = hero.alive == true && isEnemyOnTheTrace(eRect, deathTrace);
             //if( MG.heroStat == 'goingBack') MG.pVertices = MG.pVertices.reverse();
             if((hero_collide || trace_collide) && hero.heroStat != dead && pVertices.length > 0){
                 hero.alive = false; hero.heroStat = dead;

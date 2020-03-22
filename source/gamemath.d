@@ -1,6 +1,6 @@
 module gamemath;
 
-import core.stdc.math: powf, sqrtf;
+import core.stdc.math: powf, sqrtf, fabs;
 
 import std.math;
 import std.range;
@@ -132,7 +132,7 @@ bool inPoly(P, R)(P point, ref R Rail){
 float dist(P)(P start, P end) pure {
     return sqrtf(powf(start.x - end.x, 2) + powf(start.y - end.y, 2));
 }
-
+/*
 bool isEnemyOnTheTrace(SDL_Rect rect, ref Dvector!(Tuple!(Point, Point)) lines){
     foreach(i; 0..lines.length){
         if(lineIntersectsRect(lines[i][0], lines[i][1], rect)){
@@ -141,7 +141,22 @@ bool isEnemyOnTheTrace(SDL_Rect rect, ref Dvector!(Tuple!(Point, Point)) lines){
     }
     return false;
 }
-bool lineIntersectsRect(Point p1, Point p2, SDL_Rect r){
+*/
+
+bool isEnemyOnTheTrace(Circle c, ref Dvector!(Tuple!(Point, Point)) lines){
+    foreach(i; 0..lines.length){
+        immutable l1 = lines[i][0];
+        immutable l2 = lines[i][1];
+        immutable ret = (fabs((l2.y - l1.y)*c.pos.x +  c.pos.y*(l1.x -     
+        l2.x) + (l1.y - l2.y)*l1.x +
+        (l1.x - l2.x)*l1.y)/ sqrtf(powf(l2.y - l1.y, 2) +
+        powf(l1.x - l2.x, 2)) <= c.radius);
+        if(ret) return true;
+    }
+    return false;
+}
+
+bool lineIntersectsRect(Point p1, Point p2, SDL_Rect r) pure {
     auto sdlp1 = SDL_Point(p1.x, p1.y);
     auto sdlp2 = SDL_Point(p2.x, p2.y);
     return lineIntersectsLine(p1, p2, Point(r.x, r.y), Point(r.x + r.w, r.y)) ||
@@ -151,7 +166,7 @@ bool lineIntersectsRect(Point p1, Point p2, SDL_Rect r){
             (SDL_PointInRect( &sdlp1, &r) && SDL_PointInRect(&sdlp2, &r));
 }
 
-bool lineIntersectsLine(Point l1p1, Point l1p2, Point l2p1, Point l2p2){
+bool lineIntersectsLine(Point l1p1, Point l1p2, Point l2p1, Point l2p2) pure {
     auto q = (l1p1.y - l2p1.y) * (l2p2.x - l2p1.x) - (l1p1.x - l2p1.x) * (l2p2.y - l2p1.y);
     auto d = (l1p2.x - l1p1.x) * (l2p2.y - l2p1.y) - (l1p2.y - l1p1.y) * (l2p2.x - l2p1.x);
 
@@ -171,4 +186,16 @@ bool lineIntersectsLine(Point l1p1, Point l1p2, Point l2p1, Point l2p2){
     }
 
     return true;
+}
+
+bool collides(Circle circle1, Circle circle2) pure {
+
+    const dx = circle1.pos.x - circle2.pos.x;
+    const dy = circle1.pos.y - circle2.pos.y;
+    const distance = sqrtf(cast(float)(dx * dx + dy * dy));
+
+    if(distance < circle1.radius + circle2.radius)
+        return true;
+    
+    return false;
 }

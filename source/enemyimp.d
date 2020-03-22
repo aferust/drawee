@@ -15,13 +15,18 @@ struct Enemy {
     cpShape *shape;
     
     @nogc nothrow:
-    this(int sz, Point p, cpVect velocity){
+
+    Circle circle() {
+        return Circle(pos, ENEMY_RADIUS);
+    }
+
+    this(int radius, Point p, cpVect velocity){
         pos = p;
-        _body = cpBodyNew(1, cpMomentForCircle (0.5, 0, sz/2, cpVect(0, 0)));
+        _body = cpBodyNew(1, cpMomentForCircle (0.5, 0, radius, cpVect(0, 0)));
         cpBodySetPosition(_body, cpVect(p.x, p.y));
         cpBodySetVelocity(_body, velocity);
 
-        shape = cpCircleShapeNew(_body, sz/2, cpVect(0, 0));
+        shape = cpCircleShapeNew(_body, radius, cpVect(0, 0));
 
         //auto filter = cpShapeFilterNew(1, 1, 1);
         //cpShapeSetFilter(shape, filter);

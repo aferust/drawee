@@ -8,18 +8,23 @@ import globals;
 
 @nogc nothrow:
 
+enum quality = 0.125;
+
 /// allows absolute positioning
 void _glVertex2f(int x, int y){
     glVertex2f(x * 2.0 / cast(float)SCREEN_WIDTH - 1.0, 1.0 - y * 2.0 / cast(float)SCREEN_HEIGHT);
+    //glVertex2f(x, y);
 }
 
 void filledCircle(int x, int y, int radius, Color!float cl){
 	int i;
-	int triangleAmount = 50; //# of triangles used to draw circle
+	int triangleAmount = cast(int)(SCREEN_WIDTH * quality); //# of triangles used to draw circle
 	
 	GLfloat twicePi = 2.0f * PI;
 	
 	glBegin(GL_TRIANGLE_FAN);
+        glEnable(GL_POINT_SMOOTH);
+        glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
         glColor3f(cl.r, cl.g, cl.b);
 		_glVertex2f(x, y); // center of circle
 		for(i = 0; i <= triangleAmount;i++) { 
@@ -33,7 +38,7 @@ void filledCircle(int x, int y, int radius, Color!float cl){
 
 void hollowCircle(GLfloat x, GLfloat y, GLfloat radius, Color!float cl){
 	int i;
-	int lineAmount = 80; //# of triangles used to draw circle
+	int lineAmount = cast(int)(SCREEN_WIDTH * quality); //# of triangles used to draw circle
 	
 	GLfloat twicePi = 2.0f * PI;
 	

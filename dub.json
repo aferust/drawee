@@ -8,7 +8,7 @@
 		"bindbc-sdl": "~>0.13.0",
         "dvector": "~>0.0.5",
         "earcutd": "*",
-        "chipmunkd": "*"
+        "chipmunkd": "1.0.1+7.0.1"
 	},
 	"description": "A volfied-like game WIP.",
 	"license": "boost",

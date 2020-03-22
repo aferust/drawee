@@ -16,13 +16,12 @@ void drawHero() {
 
 void drawEnemies(){
     foreach (ref enemy; enemies)
-        filledCircle(enemy.pos.x, enemy.pos.y, ENEMY_RADIUS, Color!float(0.0f, 0.0f, 0.0f));
+        filledCircle(enemy.pos.x, enemy.pos.y, ENEMY_RADIUS*2, Color!float(0.0f, 0.0f, 0.0f));
 }
 
 void drawForwardTrace() {
+    deathTrace.clear();
     if(hero.heroStat == cutting && hero.alive){
-        deathTrace.clear();
-
         const len = pVertices.length;
         const color = Color!float(1,0,0);
         if(len==1){

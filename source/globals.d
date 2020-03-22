@@ -32,6 +32,11 @@ struct Point {
     }
 }
 
+struct Circle {
+    Point pos;
+    int radius;
+}
+
 struct Color(T){
     T r, g, b;
 }
@@ -64,4 +69,4 @@ enum {
 enum WALLS_ELASTICITY = 1;
 enum WALLS_FRICTION = 1;
 
-enum ENEMY_RADIUS = 15;
+enum ENEMY_RADIUS = 10;

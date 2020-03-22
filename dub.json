@@ -1,17 +1,17 @@
 {
-	"authors": [
-		"user"
-	],
-	"copyright": "Copyright © 2020, user",
-	"dependencies": {
-		"bindbc-opengl": "~>0.10.0",
-		"bindbc-sdl": "~>0.13.0",
+    "authors": [
+        "user"
+    ],
+    "copyright": "Copyright © 2020, user",
+    "dependencies": {
+        "bindbc-opengl": "~>0.10.0",
+        "bindbc-sdl": "~>0.13.0",
         "dvector": "~>0.0.5",
         "earcutd": "*",
         "chipmunkd": "1.0.1+7.0.1"
-	},
-	"description": "A volfied-like game WIP.",
-	"license": "boost",
+    },
+    "description": "A volfied-like game WIP.",
+    "license": "boost",
     "name": "drawee",
     "versions": [
         "GL_31", "GL_AllowDeprecated"

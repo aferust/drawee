@@ -52,7 +52,7 @@ struct Action(P) {
         }
 
         double step = distance / steps;
-        
+
         double n = (step * counter++);
         
         current = P(

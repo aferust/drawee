@@ -97,7 +97,7 @@ extern (C) int main() {
             if(hero.alive == true && hero.heroStat != dead)
                 dieIfCollide();
 
-            hero.update();
+            hero.update(dt);
             proceedActions();
 
             foreach (ref enemy; enemies){

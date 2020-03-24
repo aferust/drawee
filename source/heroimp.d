@@ -33,24 +33,25 @@ struct Hero {
     uint direction = none;
     bool alive = true;
 
+    float speed = 0.05f;
     nothrow @nogc:
 
     Circle circle() {
         return Circle(pos, cast(int)HERO_RADIUS);
     }
 
-    void update(){ // delta is not used here for now
-
-        int s = grid_size;
+    void update(float dt){ // delta is not used here for now
+        //printf("%f \n", dt);
+        int s = cast(int)(grid_size * dt * speed);
         auto cpos = pos;
         auto pos_ = pos;
-        import std.algorithm.searching: canFind;
         
         if(!keystate[SDL_SCANCODE_SPACE] && heroStat == cutting){
             moveOnTraceBack();
         } else
         if(keystate[SDL_SCANCODE_SPACE] && heroStat != goingBack && heroStat != dead){ // go with drawing
             /* We will check if half of the grid_size falls in polygon to be sure that thin walls are not being cut wrongly*/
+            s = cast(int)(ceil(cast(float)s / cast(float)grid_size) * grid_size);
             if(keystate[SDL_SCANCODE_DOWN] && pos.y <= SCREEN_HEIGHT && isPointInPolygon(Point(pos.x,pos.y+grid_size/2), rail)){
                 pos.y += s;
                 if( direction != down && !isPosInObstacles(roundPoint(pos, grid_size))) {

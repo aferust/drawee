@@ -105,9 +105,13 @@ extern (C) int main() {
             proceedActions(dt);
             heroDelayer = 0.0;
         }
-            
-        cpSpaceStep(space, cast(float)dt*1000);
-
+        
+        enemyDelayer += dt;
+        if(enemyDelayer > 0.00018){
+            cpSpaceStep(space, cast(float)dt*1000);
+            enemyDelayer = 0.0;
+        }
+        
         foreach (ref enemy; enemies){
             enemy.update();
         }

@@ -44,7 +44,7 @@ struct Hero {
         //if(actions.length)
         //    return;
         //printf("%f \n", dt);
-        int s = 5;
+        int s = grid_size;
         auto cpos = pos;
         auto pos_ = pos;
         import std.algorithm.searching: canFind;

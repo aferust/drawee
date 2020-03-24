@@ -20,7 +20,7 @@ __gshared {
     enum SCREEN_HEIGHT = 600;
     enum totalArea = SCREEN_WIDTH * SCREEN_HEIGHT;
 
-    enum FPS = 50;
+    enum FPS = 60;
     enum FRAME_RATE = 1000/FPS;
 
     enum HERO_RADIUS = 9.5f;

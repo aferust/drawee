@@ -42,7 +42,7 @@ struct Action(P) {
         return sqrtf(powf(start.x - end.x, 2) + powf(start.y - end.y, 2));
     }
 
-    void update(double delta){
+    void update(){
         if(!started)
             return;
         if(runaction !is null){
@@ -74,13 +74,13 @@ auto makeAction(P = Point, Args...)(Args args){
         return Action!P(args);
 }
 
-void proceedActions(double dt) {
+void proceedActions() {
     if(actions.length && actions[actions.length-1].done)
         actions.free;
     else {
         foreach(i; 0..actions.length){
             if(!actions[i].done && actions[i].started) {
-                actions[i].update(dt);
+                actions[i].update();
                 if(actions[i].runaction is null) hero.pos = actions[i].current;
                 if(actions[i].done && actions.length > i+1)
                     actions[i+1].started = true;

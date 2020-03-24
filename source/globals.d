@@ -20,6 +20,9 @@ __gshared {
     enum SCREEN_HEIGHT = 600;
     enum totalArea = SCREEN_WIDTH * SCREEN_HEIGHT;
 
+    enum FPS = 50;
+    enum FRAME_RATE = 1000/FPS;
+
     enum HERO_RADIUS = 9.5f;
     int grid_size = 5;
 }
@@ -81,3 +84,13 @@ enum WALLS_ELASTICITY = 1;
 enum WALLS_FRICTION = 1;
 
 enum ENEMY_RADIUS = 10;
+
+void sleepMS(T)(T dur){
+    version(Windows){
+        import core.sys.windows.windows;
+        Sleep(dur);
+    }else{
+        import core.sys.posix.unistd;
+        sleep(dur/1000);
+    }
+}

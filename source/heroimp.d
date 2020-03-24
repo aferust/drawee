@@ -29,7 +29,6 @@ enum : uint { // motion stat
 struct Hero {
     Point pos;
     
-    //int speed = 50;
     uint heroStat = movingOntheRail;
     uint direction = none;
     bool alive = true;
@@ -40,10 +39,8 @@ struct Hero {
         return Circle(pos, cast(int)HERO_RADIUS);
     }
 
-    void update(double dt){ // delta is not used here for now
-        //if(actions.length)
-        //    return;
-        //printf("%f \n", dt);
+    void update(){ // delta is not used here for now
+
         int s = grid_size;
         auto cpos = pos;
         auto pos_ = pos;

@@ -55,21 +55,26 @@ extern (C) int main() {
     ch.preSolveFunc = &collisionPre;
     ch.separateFunc = &collisionSeparate;
     
-    enemies ~= Enemy(ENEMY_RADIUS, Point(150, 150), cpVect(0.2, 0.4));
-    enemies ~= Enemy(ENEMY_RADIUS, Point(200, 150), cpVect(0.4, 0.2));
+    enemies ~= Enemy(ENEMY_RADIUS, Point(152, 190), cpVect(0.2, 0.4));
+    enemies ~= Enemy(ENEMY_RADIUS, Point(202, 150), cpVect(0.4, 0.2));
 
     obstacles ~= Obstacle(Point(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), 60, 60);
 
 	bool quit;
 
-    uint64_t now = SDL_GetPerformanceCounter();
-    uint64_t last = 0;
-    double dt = 0;
-
     keystate = SDL_GetKeyboardState(null);
     
-    double heroDelayer = 0.0;
-    double enemyDelayer = 0.0;
+    float dt = 0;
+    int gTimer;
+
+    drawRail();
+    drawForwardTrace();
+    drawBackwardTrace();
+    drawEnemies();
+    drawHero();
+    drawObstacles();
+    SDL_GL_SwapWindow(window);
+    sleepMS(500);
 
     SDL_Event event;
     while (!quit){
@@ -84,39 +89,32 @@ extern (C) int main() {
                 }
             }
         }
-        last = now;
-        now = SDL_GetPerformanceCounter();
-        dt = double(now - last)/cast(double)SDL_GetPerformanceFrequency();
+
+        dt = SDL_GetTicks() - gTimer;
+
+        if(dt >= FRAME_RATE){ // game logic is limited to fixed FPS
+
+            if(hero.alive == true && hero.heroStat != dead)
+                dieIfCollide();
+
+            hero.update();
+            proceedActions();
+
+            foreach (ref enemy; enemies){
+                enemy.update();
+            }
+            if(dt < FPS + 1) // a workaround against a bug at start up
+                cpSpaceStep(space, dt);
+
+            gTimer = SDL_GetTicks();
+        }
         
         drawRail();
-        drawHero();
-        drawObstacles();
-
-        if(hero.alive == true && hero.heroStat != dead)
-            dieIfCollide();
-        
         drawForwardTrace();
         drawBackwardTrace();
-
-        /// I am having some issues with delta. this is my workaround
-        heroDelayer += dt;
-        if(heroDelayer > 0.018){
-            hero.update(dt);
-            proceedActions(dt);
-            heroDelayer = 0.0;
-        }
-        
-        enemyDelayer += dt;
-        if(enemyDelayer > 0.00018){
-            cpSpaceStep(space, cast(float)dt*1000);
-            enemyDelayer = 0.0;
-        }
-        
-        foreach (ref enemy; enemies){
-            enemy.update();
-        }
-
         drawEnemies();
+        drawHero();
+        drawObstacles();
 
         SDL_GL_SwapWindow(window);
     }

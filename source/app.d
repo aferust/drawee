@@ -30,6 +30,7 @@ import obstacleimp;
 
 extern (C) int main() {
     initSDL();
+    initSDLTTF();
     initGL();
 
     glEnable(GL_BLEND);
@@ -115,6 +116,7 @@ extern (C) int main() {
         drawEnemies();
         drawHero();
         drawObstacles();
+        drawAreaRate();
 
         SDL_GL_SwapWindow(window);
     }

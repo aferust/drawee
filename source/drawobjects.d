@@ -86,3 +86,19 @@ void drawObstacles(){
             Point(obstacle.rect.x, obstacle.rect.y+h), Color!float(1.0f, 0.0f, 0.0f));
     }
 }
+
+void drawAreaRate(){
+        ///////////////////////////
+        import bindbc.sdl;
+        import stringnogc;
+        import std.math;
+
+        import gamemath;
+        
+        auto currentArea = fabs(polygonArea(rail));
+        float rate = currentArea / totalArea;
+
+        auto mstr = formatText!aumem("%.2f%%", 100.0f*(1.0f - rate));
+
+        RenderText(mstr.slice.ptr, SDL_Color(0,255,0), 30, 30, 24);
+}

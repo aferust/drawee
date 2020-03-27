@@ -3,6 +3,7 @@ module boilerplate;
 import core.stdc.stdio;
 
 import bindbc.sdl;
+import bindbc.sdl.ttf;
 import bindbc.opengl;
 
 import globals;
@@ -34,6 +35,21 @@ int initSDL(){
         return 1;
     }
     
+    return 0;
+}
+
+int initSDLTTF(){
+    version(BindSDL_Static){
+    	 // todo: some stuff
+    }else{
+    	if(loadSDLTTF() != sdlTTFSupport) {
+            printf("SDL_TTF error!".ptr);
+            return 1;
+        }
+
+    }
+    TTF_Init();
+
     return 0;
 }
 

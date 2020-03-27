@@ -82,3 +82,37 @@ void drawRect(Rect r, Color!float cl){
         _glVertex2f(r.x, r.y+r.h);
     glEnd();
 }
+
+import bindbc.sdl;
+import stringnogc;
+
+// draws wrong color ????
+void RenderText(const(char)* message, SDL_Color color, int x, int y, int size) {
+    import bindbc.sdl.ttf;
+
+    glEnable(GL_BLEND);
+    glEnable(GL_TEXTURE_2D);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    TTF_Font *font = TTF_OpenFont( "Fontin-Regular.ttf", size );
+    
+    SDL_Surface * sFont = TTF_RenderText_Blended(font, message, color);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, sFont.w, sFont.h, 0, GL_BGRA, GL_UNSIGNED_BYTE, sFont.pixels);
+
+    glBegin(GL_QUADS);
+    {
+        glTexCoord2f(0,0); _glVertex2f(x, y);
+        glTexCoord2f(1,0); _glVertex2f(x + sFont.w, y);
+        glTexCoord2f(1,1); _glVertex2f(x + sFont.w, y + sFont.h);
+        glTexCoord2f(0,1); _glVertex2f(x, y + sFont.h);
+    }
+    glEnd();
+    glDisable(GL_BLEND);
+    glDisable(GL_TEXTURE_2D);
+
+    TTF_CloseFont(font);
+    SDL_FreeSurface(sFont);
+}

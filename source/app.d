@@ -47,6 +47,8 @@ extern (C) int main() {
     rail.pushBack(Point(SCREEN_WIDTH, SCREEN_HEIGHT));
     rail.pushBack(Point(SCREEN_WIDTH, 0));
 
+    rate = 0.0f;
+
     updateTriangles();
     updateWalls();
 

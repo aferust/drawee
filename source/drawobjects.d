@@ -94,11 +94,8 @@ void drawAreaRate(){
         import std.math;
 
         import gamemath;
-        
-        auto currentArea = fabs(polygonArea(rail));
-        float rate = currentArea / totalArea;
 
-        auto mstr = formatText!aumem("%.2f%%", 100.0f*(1.0f - rate));
+        auto mstr = formatText!aumem("%.2f%%", rate);
 
         RenderText(mstr.slice.ptr, SDL_Color(0,255,0), 30, 30, 24);
 }

@@ -72,6 +72,8 @@ __gshared {
     cpSpace* space;
 
     float currentArea;
+    float rate;
+    
     bool won;
 }
 

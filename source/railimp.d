@@ -128,10 +128,8 @@ void processRail(){
     */
     
     currentArea = fabs(polygonArea(rail));
-    float rate = currentArea / totalArea;
-
-    import core.stdc.stdio;
-    printf("%.2f%% \n", 100.0f*(1.0f - rate));
+    rate = 100.0f*(1.0f - currentArea / totalArea);
+    
     /*
     if(1-rate >= 0.8f){
         enemies.clear();

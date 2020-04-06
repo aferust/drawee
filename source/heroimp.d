@@ -116,7 +116,7 @@ struct Hero {
         auto len = obstacles.length;
         foreach(i; 0..len){
             auto rect = obstacles[i].rect;
-            enum offset = 5; // offset is not a must. just looks better
+            int offset = grid_size; // offset is not a must. just looks better
             Point[4] rect_with_offset = [Point(rect.x-offset, rect.y-offset),
                                         Point(rect.x+rect.w+offset, rect.y-offset),
                                         Point(rect.x+rect.w+offset, rect.y+rect.h+offset),
@@ -154,7 +154,7 @@ bool dieIfCollide(){
                 
                 actions.clear();
                 
-                auto first = makeAction(hero.pos, pVertices[0], cast(int)dist(hero.pos, pVertices[0])/5);
+                auto first = makeAction(hero.pos, pVertices[0], cast(int)dist(hero.pos, pVertices[0])/grid_size);
                 first.started = true;
                 actions.pushBack(first);
                 auto last = makeAction(&fix);
@@ -175,11 +175,11 @@ void moveOnTraceBack(){
     hero.heroStat = goingBack;
     if(pVertices.length>0){
         //hero.pos = pVertices[0];
-        auto first = makeAction(hero.pos, pVertices[pVertices.length-1], cast(int)dist(hero.pos, pVertices[pVertices.length-1])/5);
+        auto first = makeAction(hero.pos, pVertices[pVertices.length-1], cast(int)dist(hero.pos, pVertices[pVertices.length-1])/grid_size);
         first.started = true;
         actions.pushBack(first);
         foreach_reverse(i; 1..pVertices.length){
-            actions.pushBack(makeAction(pVertices[i], pVertices[i-1], cast(int)dist(pVertices[i], pVertices[i-1])/5));
+            actions.pushBack(makeAction(pVertices[i], pVertices[i-1], cast(int)dist(pVertices[i], pVertices[i-1])/grid_size));
         }
         
         auto last = makeAction(&fix);

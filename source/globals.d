@@ -24,7 +24,7 @@ __gshared {
     enum FRAME_RATE = 1000/FPS;
 
     enum HERO_RADIUS = 9.5f;
-    int grid_size = 4;
+    int grid_size = 5;
 }
 
 struct Point {

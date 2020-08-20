@@ -84,7 +84,6 @@ void drawRect(Rect r, Color!float cl){
 }
 
 import bindbc.sdl;
-import stringnogc;
 
 // draws wrong color ????
 void RenderText(const(char)* message, SDL_Color color, int x, int y, int size) {

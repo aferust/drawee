@@ -7,7 +7,6 @@
         "bindbc-opengl": "~>0.10.0",
         "bindbc-sdl": "~>0.13.0",
         "dvector": "~>0.0.5",
-        "stringnogc": "*",
         "earcutd": "*",
         "chipmunkd": "1.0.1+7.0.1"
     },

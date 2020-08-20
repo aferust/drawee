@@ -90,12 +90,13 @@ void drawObstacles(){
 void drawAreaRate(){
         ///////////////////////////
         import bindbc.sdl;
-        import stringnogc;
+        import core.stdc.stdio: sprintf;
         import std.math;
 
         import gamemath;
 
-        auto mstr = formatText!aumem("%.2f%%", rate);
+        char[10] buff;
+        sprintf(buff.ptr, "%.2f%%", rate);
 
-        RenderText(mstr.slice.ptr, SDL_Color(0,255,0), 30, 30, 24);
+        RenderText(buff.ptr, SDL_Color(0,255,0), 30, 30, 24);
 }

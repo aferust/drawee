@@ -90,7 +90,14 @@ extern (C) int main() {
                     default:
                         break;
                 }
-            }
+            }/* else if(event.type == SDL_KEYUP){
+                switch (event.key.keysym.sym){
+                    case SDLK_SPACE:
+                        break;
+                    default:
+                        break;
+                }
+            }*/
         }
 
         dt = SDL_GetTicks() - gTimer;

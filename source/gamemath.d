@@ -129,11 +129,11 @@ bool inPoly(P, R)(P point, ref R Rail){
     return false;
 }
 
-float dist(P)(P start, P end) pure {
+float dist(P)(P start, P end) {
     return sqrtf(powf(start.x - end.x, 2) + powf(start.y - end.y, 2));
 }
 
-bool isEnemyOnTheTrace(const Circle c, ref Dvector!(Tuple!(Point, Point)) lines) pure {
+bool isEnemyOnTheTrace(const Circle c, ref Dvector!(Tuple!(Point, Point)) lines) {
     foreach(i; 0..lines.length){
         immutable l1 = lines[i][0];
         immutable l2 = lines[i][1];
@@ -147,7 +147,7 @@ bool isEnemyOnTheTrace(const Circle c, ref Dvector!(Tuple!(Point, Point)) lines)
 }
 
 private {
-bool islineCircleCollision(in float x1, in float y1, in float x2, in float y2, in float cx, in float cy, in float r) pure {
+bool islineCircleCollision(in float x1, in float y1, in float x2, in float y2, in float cx, in float cy, in float r) {
     bool inside1 = pointCircle(x1,y1, cx,cy,r);
     bool inside2 = pointCircle(x2,y2, cx,cy,r);
     if (inside1 || inside2)
@@ -175,7 +175,7 @@ bool islineCircleCollision(in float x1, in float y1, in float x2, in float y2, i
     return false;
 }
 
-bool pointCircle(in float px, in float py, in float cx, in float cy, in float r) pure {
+bool pointCircle(in float px, in float py, in float cx, in float cy, in float r) {
     float distX = px - cx;
     float distY = py - cy;
     float distance = sqrtf( (distX*distX) + (distY*distY) );
@@ -185,7 +185,7 @@ bool pointCircle(in float px, in float py, in float cx, in float cy, in float r)
     return false;
 }
 
-bool linePoint(in float x1, in float y1, in float x2, in float y2, in float px, in float py) pure {
+bool linePoint(in float x1, in float y1, in float x2, in float y2, in float px, in float py) {
     float d1 = sqrtf(cast(float)(powf(px-x1, 2) + powf(py-y1, 2)));
     float d2 = sqrtf(cast(float)(powf(px-x2, 2) + powf(py-y2, 2)));
 
@@ -199,7 +199,7 @@ bool linePoint(in float x1, in float y1, in float x2, in float y2, in float px, 
 }
 }
 
-bool collides(Circle circle1, Circle circle2) pure {
+bool collides(Circle circle1, Circle circle2) {
 
     const dx = circle1.pos.x - circle2.pos.x;
     const dy = circle1.pos.y - circle2.pos.y;

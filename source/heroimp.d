@@ -25,12 +25,15 @@ enum : uint { // motion stat
     left,
     right
 }
+                //      up    down  left   right // yes it could be a better impl.
+static bool[4] freewaysOnCut = [true, true, true, true];
 
 struct Hero {
     Point pos;
     
     uint heroStat = movingOntheRail;
     uint direction = none;
+
     bool alive = true;
 
     float speed = 0.05f;
@@ -48,33 +51,45 @@ struct Hero {
         
         if(!keystate[SDL_SCANCODE_SPACE] && heroStat == cutting){
             moveOnTraceBack();
+            freewaysOnCut = true;
         } else
         if(keystate[SDL_SCANCODE_SPACE] && heroStat != goingBack && heroStat != dead){ // go with drawing
             /* We will check if half of the grid_size falls in polygon to be sure that thin walls are not being cut wrongly*/
             s = cast(int)(ceil(cast(float)s / cast(float)grid_size) * grid_size);
-            if(keystate[SDL_SCANCODE_DOWN] && pos.y <= SCREEN_HEIGHT && isPointInPolygon(Point(pos.x,pos.y+grid_size/2), rail)){
+            if(keystate[SDL_SCANCODE_DOWN] && pos.y <= SCREEN_HEIGHT && isPointInPolygon(Point(pos.x,pos.y+grid_size/2), rail) && freewaysOnCut[1]){
                 pos.y += s;
                 if( direction != down && !isPosInObstacles(roundPoint(pos, grid_size))) {
                     pVertices.pushBack(pos_);
-                    direction = down; 
+                    direction = down;
+                    freewaysOnCut = true;
+                    freewaysOnCut[0] = false;
                 }
-            }else if(keystate[SDL_SCANCODE_UP] && pos.y >= 0 && isPointInPolygon(Point(pos.x,pos.y-grid_size/2), rail)) {
+            }else if(keystate[SDL_SCANCODE_UP] && pos.y >= 0 && isPointInPolygon(Point(pos.x,pos.y-grid_size/2), rail) && freewaysOnCut[0]) {
                 pos.y -=  s;
                 if( direction != up && !isPosInObstacles(roundPoint(pos, grid_size))) {
                     pVertices.pushBack(pos_);
                     direction = up;
+
+                    freewaysOnCut = true;
+                    freewaysOnCut[1] = false;
                 } 
-            }else if(keystate[SDL_SCANCODE_LEFT] && pos.x >= 0 && isPointInPolygon(Point(pos.x-grid_size/2,pos.y), rail)) {
+            }else if(keystate[SDL_SCANCODE_LEFT] && pos.x >= 0 && isPointInPolygon(Point(pos.x-grid_size/2,pos.y), rail) && freewaysOnCut[2]) {
                 pos.x -=  s;
                 if( direction != left && !isPosInObstacles(roundPoint(pos, grid_size))) {
                     pVertices.pushBack(pos_);
                     direction = left;
+
+                    freewaysOnCut = true;
+                    freewaysOnCut[3] = false;
                 }
-            }else if(keystate[SDL_SCANCODE_RIGHT] && pos.x <= SCREEN_WIDTH && isPointInPolygon(Point(pos.x+grid_size/2,pos.y), rail)) {
+            }else if(keystate[SDL_SCANCODE_RIGHT] && pos.x <= SCREEN_WIDTH && isPointInPolygon(Point(pos.x+grid_size/2,pos.y), rail) && freewaysOnCut[3]) {
                 pos.x +=  s;
                 if( direction != right && !isPosInObstacles(roundPoint(pos, grid_size))) {
                     pVertices.pushBack(pos_);
                     direction = right;
+
+                    freewaysOnCut = true;
+                    freewaysOnCut[2] = false;
                 } 
             }
             
@@ -90,6 +105,7 @@ struct Hero {
             }
             if(heroStat == cutting && isPointOntheRail(rail, pos)){
                 keystate[SDL_SCANCODE_SPACE] = false;
+                freewaysOnCut = true;
                 doNewRail();
                 heroStat = movingOntheRail;
             }
@@ -107,6 +123,7 @@ struct Hero {
             if(isPointOntheRail(rail, cpos) && !isPointInPolygon(cpos, rail)){
                 heroStat = movingOntheRail;
                 pos = roundPoint(cpos, grid_size);
+                freewaysOnCut = true;
             }
         }
 

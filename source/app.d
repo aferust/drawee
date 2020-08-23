@@ -41,27 +41,13 @@ extern (C) int main() {
 
     space = cpSpaceNew();
 
-    hero = Hero(Point(SCREEN_WIDTH/2, SCREEN_HEIGHT));
-    rail.pushBack(Point(0, 0));
-    rail.pushBack(Point(0, SCREEN_HEIGHT));
-    rail.pushBack(Point(SCREEN_WIDTH, SCREEN_HEIGHT));
-    rail.pushBack(Point(SCREEN_WIDTH, 0));
-
-    rate = 0.0f;
-
-    updateTriangles();
-    updateWalls();
-
     auto ch = cpSpaceAddCollisionHandler(space, COLLISION_TYPE_STATIC, COLLISION_TYPE_DYNAMIC);
     ch.beginFunc = &collisionBegin;
     ch.postSolveFunc = &collisionPost;
     ch.preSolveFunc = &collisionPre;
     ch.separateFunc = &collisionSeparate;
     
-    enemies ~= Enemy(ENEMY_RADIUS, Point(152, 190), cpVect(0.2, 0.4));
-    enemies ~= Enemy(ENEMY_RADIUS, Point(202, 150), cpVect(0.4, 0.2));
-
-    obstacles ~= Obstacle(Point(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), 60, 60);
+    resetGame();
 
 	bool quit;
 
@@ -86,6 +72,9 @@ extern (C) int main() {
                 switch (event.key.keysym.sym){
                     case SDLK_ESCAPE:
                         quit = true;
+                        break;
+                    case SDLK_r:
+                        resetGame();
                         break;
                     default:
                         break;
@@ -138,4 +127,25 @@ extern (C) int main() {
     SDL_Quit();
 
     return 0;
+}
+
+void resetGame(){
+    hero = Hero(Point(SCREEN_WIDTH/2, SCREEN_HEIGHT));
+
+    rail.clear();
+    rail.pushBack(Point(0, 0));
+    rail.pushBack(Point(0, SCREEN_HEIGHT));
+    rail.pushBack(Point(SCREEN_WIDTH, SCREEN_HEIGHT));
+    rail.pushBack(Point(SCREEN_WIDTH, 0));
+
+    rate = 0.0f;
+
+    updateTriangles();
+    updateWalls();
+
+    enemies.clear();
+    enemies ~= Enemy(ENEMY_RADIUS, Point(152, 190), cpVect(0.2, 0.4));
+    enemies ~= Enemy(ENEMY_RADIUS, Point(202, 150), cpVect(0.4, 0.2));
+
+    obstacles ~= Obstacle(Point(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), 60, 60);
 }

@@ -18,14 +18,6 @@ import globals;
 
 enum PI = 3.14159265359f;
 
-float translateX(T)(T x){
-    return cast(float)(x * 2.0 / cast(float)SCREEN_WIDTH - 1.0);
-}
-
-float translateY(T)(T y){
-    return cast(float)(1.0 - y * 2.0 / cast(float)SCREEN_HEIGHT);
-}
-
 struct GLLine{
     
     Dvector!float vertices;

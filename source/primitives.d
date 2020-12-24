@@ -1,117 +1,548 @@
 module primitives;
 
-import std.math;
+import core.stdc.math: cos, sin;
+import core.stdc.stdlib: malloc, free, exit;
+
+import std.range: chunks;
 
 import bindbc.opengl;
+import dvector;
+import bettercmath;
 
+alias Mat4 = Matrix!(float, 4);
+
+import gamemath;
 import globals;
 
 @nogc nothrow:
 
-enum quality = 0.125;
+enum PI = 3.14159265359f;
 
-/// allows absolute positioning
-void _glVertex2f(int x, int y){
-    glVertex2f(x * 2.0 / cast(float)SCREEN_WIDTH - 1.0, 1.0 - y * 2.0 / cast(float)SCREEN_HEIGHT);
-    //glVertex2f(x, y);
+float translateX(T)(T x){
+    return cast(float)(x * 2.0 / cast(float)SCREEN_WIDTH - 1.0);
 }
 
-void filledCircle(int x, int y, int radius, Color!float cl){
-	int i;
-	int triangleAmount = cast(int)(SCREEN_WIDTH * quality); //# of triangles used to draw circle
-	
-	GLfloat twicePi = 2.0f * PI;
-	
-	glBegin(GL_TRIANGLE_FAN);
-        glEnable(GL_POINT_SMOOTH);
-        glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-        glColor3f(cl.r, cl.g, cl.b);
-		_glVertex2f(x, y); // center of circle
-		for(i = 0; i <= triangleAmount;i++) { 
-			_glVertex2f(
-		        cast(int)(x + (radius * cos(i *  twicePi / triangleAmount))), 
-			    cast(int)(y + (radius * sin(i * twicePi / triangleAmount)))
-			);
-		}
-	glEnd();
+float translateY(T)(T y){
+    return cast(float)(1.0 - y * 2.0 / cast(float)SCREEN_HEIGHT);
 }
 
-void hollowCircle(GLfloat x, GLfloat y, GLfloat radius, Color!float cl){
-	int i;
-	int lineAmount = cast(int)(SCREEN_WIDTH * quality); //# of triangles used to draw circle
-	
-	GLfloat twicePi = 2.0f * PI;
-	
-	glBegin(GL_LINE_LOOP);
-        glColor3f(cl.r, cl.g, cl.b);
-		for(i = 0; i <= lineAmount;i++) { 
-			_glVertex2f(
-			    cast(int)(x + (radius * cos(i *  twicePi / lineAmount))), 
-			    cast(int)(y + (radius* sin(i * twicePi / lineAmount)))
-			);
-		}
-	glEnd();
-}
-
-void drawPolygon(){
-    glClear( GL_COLOR_BUFFER_BIT );
-    glBegin(GL_TRIANGLES);
-        glColor3f(1.0f, 1.0f, 1.0f);
-        foreach(i; 0 .. triangles.length / 3){
-            _glVertex2f(rail[triangles[i*3]].x, rail[triangles[i*3]].y );
-            _glVertex2f(rail[triangles[i*3 + 1]].x, rail[triangles[i*3 + 1]].y );
-            _glVertex2f(rail[triangles[i*3 + 2]].x, rail[triangles[i*3 + 2]].y );
-        }
-    glEnd();
-}
-
-void line(Point p1, Point p2, Color!float cl){
-    glBegin(GL_LINES);
-        glColor3f(cl.r, cl.g, cl.b);
-        _glVertex2f(p1.x, p1.y);
-        _glVertex2f(p2.x, p2.y);
-    glEnd();
-}
-
-void drawRect(Rect r, Color!float cl){
-    glBegin(GL_QUADS);
-        glColor3d(cl.r, cl.g, cl.b);
-        _glVertex2f(r.x, r.y);
-        _glVertex2f(r.x+r.w, r.y);
-        _glVertex2f(r.x+r.w, r.y+r.h);
-        _glVertex2f(r.x, r.y+r.h);
-    glEnd();
-}
-
-import bindbc.sdl;
-
-// draws wrong color ????
-void RenderText(const(char)* message, SDL_Color color, int x, int y, int size) {
-    import bindbc.sdl.ttf;
-
-    glEnable(GL_BLEND);
-    glEnable(GL_TEXTURE_2D);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    TTF_Font *font = TTF_OpenFont( "Fontin-Regular.ttf", size );
+struct GLLine{
     
-    SDL_Surface * sFont = TTF_RenderText_Blended(font, message, color);
+    Dvector!float vertices;
+    GLuint shaderProgram;
+    GLuint vbo;
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, sFont.w, sFont.h, 0, GL_BGRA, GL_UNSIGNED_BYTE, sFont.pixels);
+    @nogc nothrow:
 
-    glBegin(GL_QUADS);
-    {
-        glTexCoord2f(0,0); _glVertex2f(x, y);
-        glTexCoord2f(1,0); _glVertex2f(x + sFont.w, y);
-        glTexCoord2f(1,1); _glVertex2f(x + sFont.w, y + sFont.h);
-        glTexCoord2f(0,1); _glVertex2f(x, y + sFont.h);
+    this(GLuint shaderProgram){
+        this.shaderProgram = shaderProgram;
+
+        vertices = [0.0f, 0.0f, 0.0f, 0.0f];
+
+        glGenBuffers(1, &vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, vertices.length * float.sizeof, vertices[].ptr, GL_STATIC_DRAW);
     }
-    glEnd();
-    glDisable(GL_BLEND);
-    glDisable(GL_TEXTURE_2D);
 
-    TTF_CloseFont(font);
-    SDL_FreeSurface(sFont);
+    void set(Point point1, Point point2, Color color){
+        vertices[0] = float(point1.x);
+        vertices[1] = float(point1.y);
+        vertices[2] = float(point2.x);
+        vertices[3] = float(point2.y);
+
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, vertices.length * float.sizeof, vertices[].ptr, GL_STATIC_DRAW);
+
+        glUseProgram(shaderProgram);
+
+        GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
+        glEnableVertexAttribArray(posAttrib);
+        
+        auto vertexSize =float.sizeof*2;
+        glVertexAttribPointer(posAttrib, 2, GL_FLOAT, false, cast(uint)vertexSize, null);
+
+        auto pmAtt = glGetUniformLocation(shaderProgram, "projectionMat");
+        glUniformMatrix4fv(pmAtt, 1, GL_FALSE, ortho.elements.ptr);
+
+        // set color
+        auto cAtt = glGetUniformLocation(shaderProgram, "ucolor");
+        glUniform4fv(cAtt, 1, color.ptr);
+    }
+
+    void draw() {
+        glUseProgram(shaderProgram);
+        glDrawArrays(GL_LINES, 0, 2);
+        glDisableVertexAttribArray(0);
+        glUseProgram(0);
+    }
+
+    ~this(){
+        vertices.free();
+    }
+}
+
+struct GLCircle {
+    
+    Dvector!float vertices;
+    GLuint shaderProgram;
+    GLuint vbo;
+
+    @nogc nothrow:
+
+    this(GLuint shaderProgram){
+        this.shaderProgram = shaderProgram;
+
+        enum numVertices = 1000;
+
+        float increment = 2.0f * PI / float(numVertices);
+
+        for (float currAngle = 0.0f; currAngle <= 2.0f * PI; currAngle += increment)
+        {
+            vertices ~= 0.0f;
+            vertices ~= 0.0f;
+        }
+
+        glGenBuffers(1, &vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, vertices.length * float.sizeof, vertices[].ptr, GL_STATIC_DRAW);
+    }
+
+    void set(int x, int y, float radius, Color color){
+        enum numVertices = 1000;
+
+        float increment = 2.0f * PI / float(numVertices);
+
+        size_t i;
+        for (float currAngle = 0.0f; currAngle <= 2.0f * PI; currAngle += increment)
+        {
+            vertices[i] = radius * cos(currAngle) + float(x);
+            vertices[i+1] = radius * sin(currAngle) + float(y);
+            i += 2;
+        }
+
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, vertices.length * float.sizeof, vertices[].ptr, GL_STATIC_DRAW);
+        
+        glUseProgram(shaderProgram);
+
+        GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
+        auto vertexSize =float.sizeof*2;
+        glVertexAttribPointer(posAttrib, 2, GL_FLOAT, false, cast(uint)vertexSize, null);
+        glEnableVertexAttribArray(posAttrib);
+
+        auto pmAtt = glGetUniformLocation(shaderProgram, "projectionMat");
+        glUniformMatrix4fv(pmAtt, 1, GL_FALSE, ortho.elements.ptr);
+
+        // set color
+        auto cAtt = glGetUniformLocation(shaderProgram, "ucolor");
+        glUniform4fv(cAtt, 1, color.ptr);
+    }
+
+    void draw() {
+        glUseProgram(shaderProgram);
+        glDrawArrays(GL_LINE_LOOP, 0, cast(int)vertices.length/2);
+        glDisableVertexAttribArray(0);
+        glUseProgram(0);
+    }
+
+    ~this(){
+        vertices.free();
+    }
+}
+
+struct GLSolidCircle {
+    
+    Dvector!float vertices;
+    GLuint shaderProgram;
+    GLuint vbo;
+
+    @nogc nothrow:
+
+    this(GLuint shaderProgram){
+        this.shaderProgram = shaderProgram;      
+
+        enum quality = 0.125;
+	    int triangleAmount = cast(int)(SCREEN_WIDTH * quality);
+
+		foreach(i; 0..triangleAmount) { 
+		    vertices ~= 0; 
+			vertices ~= 0;
+		}
+
+        glGenBuffers(1, &vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, vertices.length * float.sizeof, vertices[].ptr, GL_STREAM_DRAW);
+    }
+
+    void set(int x, int y, float radius, Color color){        
+
+        enum quality = 0.125;
+	    int triangleAmount = cast(int)(SCREEN_WIDTH * quality);
+        
+        int i;
+        foreach(ref c; chunks(vertices[], 2)) {
+		    c[0] = x + (radius * cos(i *  2*PI / float(triangleAmount))); 
+            c[1] = y + (radius * sin(i * 2*PI / float(triangleAmount)));
+            ++i;
+		}
+
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, vertices.length * float.sizeof, vertices[].ptr, GL_STREAM_DRAW);
+
+        glUseProgram(shaderProgram);
+
+        GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
+        glVertexAttribPointer(posAttrib, 2, GL_FLOAT, false, uint(0), null);
+        glEnableVertexAttribArray(posAttrib);
+
+        auto pmAtt = glGetUniformLocation(shaderProgram, "projectionMat");
+        glUniformMatrix4fv(pmAtt, 1, GL_FALSE, ortho.elements.ptr);
+
+        // set color
+        auto cAtt = glGetUniformLocation(shaderProgram, "ucolor");
+        glUniform4fv(cAtt, 1, color.ptr);
+    }
+
+    void draw() {
+        glUseProgram(shaderProgram);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, cast(int)vertices.length/2);
+        glDisableVertexAttribArray(0);
+        glUseProgram(0);
+    }
+
+    ~this(){
+        vertices.free();
+    }
+}
+
+struct GLPoly {
+    Dvector!float vertices;
+    GLuint shaderProgram;
+    GLuint vbo;
+
+    @nogc nothrow:
+
+    this(GLuint shaderProgram){
+        this.shaderProgram = shaderProgram;
+
+        //foreach(i; 0 .. triangles.length / 3){
+            vertices ~= 0;
+            vertices ~= 0;
+            vertices ~= 0;
+            vertices ~= 0;
+            vertices ~= 0;
+            vertices ~= 0;
+        //}
+
+        glGenBuffers(1, &vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, vertices.length * float.sizeof, vertices[].ptr, GL_STATIC_DRAW);
+        
+    }
+
+    void set(Color color){
+        vertices.free;
+        foreach(i; 0 .. triangles.length / 3){
+            vertices ~= float(rail[triangles[i*3]].x);
+            vertices ~= float(rail[triangles[i*3]].y);
+            
+            vertices ~= float(rail[triangles[i*3 + 1]].x);
+            vertices ~= float(rail[triangles[i*3 + 1]].y);
+            
+            vertices ~= float(rail[triangles[i*3 + 2]].x);
+            vertices ~= float(rail[triangles[i*3 + 2]].y);
+        }
+
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, vertices.length * float.sizeof, vertices[].ptr, GL_STATIC_DRAW);
+
+        glUseProgram(shaderProgram);
+
+        GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
+        glVertexAttribPointer(posAttrib, 2, GL_FLOAT, false, uint(0), null);
+        glEnableVertexAttribArray(posAttrib);
+
+        auto pmAtt = glGetUniformLocation(shaderProgram, "projectionMat");
+        glUniformMatrix4fv(pmAtt, 1, GL_FALSE, ortho.elements.ptr);
+
+        // set color
+        auto cAtt = glGetUniformLocation(shaderProgram, "ucolor");
+        glUniform4fv(cAtt, 1, color.ptr);
+
+    }
+
+    void draw() {
+        glUseProgram(shaderProgram);
+        glDrawArrays(GL_TRIANGLES, 0, cast(int)vertices.length/2);
+        glDisableVertexAttribArray(0);
+        glUseProgram(0);
+    }
+
+    ~this(){
+        vertices.free;
+    }
+}
+
+struct GLRect {
+    Dvector!float vertices;
+    GLuint shaderProgram;
+    GLuint vbo;
+
+    @nogc nothrow:
+
+    this(GLuint shaderProgram){
+        this.shaderProgram = shaderProgram;
+        
+        vertices = [
+            0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f
+        ];
+
+        glGenBuffers(1, &vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, vertices.length * float.sizeof, vertices[].ptr, GL_STATIC_DRAW);
+    }
+
+    void set(Rect r, Color color){
+
+        vertices ~= r.x;
+        vertices ~= r.y;
+        
+        vertices ~= r.x + r.w;
+        vertices ~= r.y;
+        
+        vertices ~= r.x;
+        vertices ~= r.y+r.h;
+
+        vertices ~= r.x+r.w;
+        vertices ~= r.y;
+
+        vertices ~= r.x+r.w;
+        vertices ~= r.y+r.h;
+
+        vertices ~= r.x;
+        vertices ~= r.y+r.h;
+
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, vertices.length * float.sizeof, vertices[].ptr, GL_STATIC_DRAW);
+
+        glUseProgram(shaderProgram);
+
+        GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
+        glEnableVertexAttribArray(posAttrib);
+        glVertexAttribPointer(posAttrib, 2, GL_FLOAT, false, uint(0), null);
+
+        auto pmAtt = glGetUniformLocation(shaderProgram, "projectionMat");
+        glUniformMatrix4fv(pmAtt, 1, GL_FALSE, ortho.elements.ptr);
+
+        // set color
+        auto cAtt = glGetUniformLocation(shaderProgram, "ucolor");
+        glUniform4fv(cAtt, 1, color.ptr);
+    }
+
+    void draw() {
+        glUseProgram(shaderProgram);
+        glDrawArrays(GL_TRIANGLES, 0, cast(int)vertices.length/2);
+        vertices.free();
+    }
+}
+
+
+/+ Shaders +/
+
+GLuint initShader(const char* vShader, const char* fShader, const char* outputAttributeName) {
+    struct Shader {
+        GLenum       type;
+        const char*      source;
+    }
+    Shader[2] shaders = [
+        Shader(GL_VERTEX_SHADER, vShader),
+        Shader(GL_FRAGMENT_SHADER, fShader)
+    ];
+
+    GLuint program = glCreateProgram();
+
+    for ( int i = 0; i < 2; ++i ) {
+        Shader s = shaders[i];
+        GLuint shader = glCreateShader( s.type );
+        glShaderSource( shader, 1, &s.source, null );
+        glCompileShader( shader );
+
+        GLint  compiled;
+        glGetShaderiv( shader, GL_COMPILE_STATUS, &compiled );
+        if ( !compiled ) {
+            printf(" failed to compile: ");
+            GLint  logSize;
+            glGetShaderiv( shader, GL_INFO_LOG_LENGTH, &logSize );
+            char* logMsg = cast(char*)malloc(char.sizeof*logSize);
+            glGetShaderInfoLog( shader, logSize, null, logMsg );
+            printf("%s \n", logMsg);
+            free(logMsg);
+
+            exit( -1 );
+        }
+
+        glAttachShader( program, shader );
+    }
+
+    /* link  and error check */
+    glLinkProgram(program);
+
+    GLint linked;
+    glGetProgramiv( program, GL_LINK_STATUS, &linked );
+    if ( !linked ) {
+        printf("Shader program failed to link");
+        GLint  logSize;
+        glGetProgramiv( program, GL_INFO_LOG_LENGTH, &logSize);
+        char* logMsg = cast(char*)malloc(char.sizeof*logSize);
+        glGetProgramInfoLog( program, logSize, null, logMsg );
+        printf("%s \n", logMsg);
+        free(logMsg);
+        exit( -1 );
+    }
+
+    /* use program object */
+    glUseProgram(program);
+
+    return program;
+}
+
+void loadShaderHero(){
+    const char*  vert = q{
+        attribute vec4 position;
+        uniform mat4 projectionMat;
+        void main() {
+            gl_Position = projectionMat * vec4(position.xyz, 1.0);
+        }
+    };
+    const char*  frag = q{
+        precision mediump float;
+        uniform vec4 ucolor;
+        void main() {
+            gl_FragColor = ucolor;
+        }
+    };
+
+    shaderProgramHero = initShader(vert,  frag, "ucolor");
+
+    uvAttribute = glGetAttribLocation(shaderProgramHero, "ucolor");
+    if (uvAttribute < 0) {
+        printf("Shader did not contain the 'color' attribute. \n");
+    }
+    positionAttribute = glGetAttribLocation(shaderProgramHero, "position");
+    if (positionAttribute < 0) {
+        printf("Shader did not contain the 'position' attribute. \n");
+    }
+}
+
+void loadShaderEnemy(){
+    const char*  vert = q{
+        attribute vec4 position;
+        uniform mat4 projectionMat;
+        void main() {
+            gl_Position = projectionMat * vec4(position.xyz, 1.0);
+        }
+    };
+    const char*  frag = q{
+        precision mediump float;
+        uniform vec4 ucolor;
+        void main() {
+            gl_FragColor = ucolor;
+        }
+    };
+
+    shaderProgramEnemy = initShader(vert,  frag, "fragColor");
+
+    uvAttribute = glGetAttribLocation(shaderProgramEnemy, "uv");
+    if (uvAttribute < 0) {
+        printf("Shader did not contain the 'color' attribute. \n");
+    }
+    positionAttribute = glGetAttribLocation(shaderProgramEnemy, "position");
+    if (positionAttribute < 0) {
+        printf("Shader did not contain the 'position' attribute. \n");
+    }
+}
+
+void loadShaderPoly(){
+    const char*  vert = q{
+        attribute vec4 position;
+        uniform mat4 projectionMat;
+        void main() {
+            gl_Position = projectionMat * vec4(position.xyz, 1.0);
+        }
+    };
+    const char*  frag = q{
+        precision mediump float;
+        uniform vec4 ucolor;
+        void main() {
+            gl_FragColor = ucolor;
+        }
+    };
+
+    shaderProgramPoly = initShader(vert,  frag, "fragColor");
+
+    uvAttribute = glGetAttribLocation(shaderProgramPoly, "uv");
+    if (uvAttribute < 0) {
+        printf("Shader did not contain the 'color' attribute. \n");
+    }
+    positionAttribute = glGetAttribLocation(shaderProgramPoly, "position");
+    if (positionAttribute < 0) {
+        printf("Shader did not contain the 'position' attribute. \n");
+    }
+}
+
+void loadShaderGreen(){
+    const char*  vert = q{
+        attribute vec4 position;
+        uniform mat4 projectionMat;
+        void main() {
+            gl_Position = projectionMat * vec4(position.xyz, 1.0);
+        }
+    };
+    const char*  frag = q{
+        precision mediump float;
+        uniform vec4 ucolor;
+        void main() {
+            gl_FragColor = ucolor;
+        }
+    };
+
+    shaderProgramGreen= initShader(vert,  frag, "fragColor");
+
+    uvAttribute = glGetAttribLocation(shaderProgramGreen, "uv");
+    if (uvAttribute < 0) {
+        printf("Shader did not contain the 'color' attribute. \n");
+    }
+    positionAttribute = glGetAttribLocation(shaderProgramGreen, "position");
+    if (positionAttribute < 0) {
+        printf("Shader did not contain the 'position' attribute. \n");
+    }
+}
+
+void loadShaderRed(){
+    const char*  vert = q{
+        attribute vec4 position;
+        uniform mat4 projectionMat;
+        void main() {
+            gl_Position = projectionMat * vec4(position.xyz, 1.0);
+        }
+    };
+    const char*  frag = q{
+        precision mediump float;
+        uniform vec4 ucolor;
+        void main() {
+            gl_FragColor = ucolor;
+        }
+    };
+
+    shaderProgramRed = initShader(vert,  frag, "fragColor");
+
+    uvAttribute = glGetAttribLocation(shaderProgramRed, "uv");
+    if (uvAttribute < 0) {
+        printf("Shader did not contain the 'color' attribute. \n");
+    }
+    positionAttribute = glGetAttribLocation(shaderProgramRed, "position");
+    if (positionAttribute < 0) {
+        printf("Shader did not contain the 'position' attribute. \n");
+    }
 }

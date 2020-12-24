@@ -33,11 +33,20 @@ extern (C) int main() {
     initSDLTTF();
     initGL();
 
+    import primitives;
+    loadShaderHero();
+    loadShaderEnemy();
+    loadShaderPoly();
+    loadShaderGreen();
+    loadShaderRed();
+
+    
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
-    glClearColor(1,0,0,1);
-    //glClear(GL_COLOR_BUFFER_BIT);
+    ortho = Mat4.ortho(0.0f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.0f);
+
+    glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
 
     space = cpSpaceNew();
 
@@ -49,20 +58,19 @@ extern (C) int main() {
     
     resetGame();
 
+    drHero = GLSolidCircle(shaderProgramHero);
+    drShield = GLCircle(shaderProgramGreen);
+    drLine = GLLine(shaderProgramGreen);
+    drPoly = GLPoly(shaderProgramPoly);
+    drRect = GLRect(shaderProgramGreen);
+
 	bool quit;
 
     keystate = SDL_GetKeyboardState(null);
     
     float dt = 0;
     int gTimer;
-
-    drawRail();
-    drawForwardTrace();
-    drawBackwardTrace();
-    drawEnemies();
-    drawHero();
-    drawObstacles();
-    SDL_GL_SwapWindow(window);
+    
     sleepMS(500);
 
     SDL_Event event;
@@ -107,6 +115,8 @@ extern (C) int main() {
 
             gTimer = SDL_GetTicks();
         }
+
+        glClear(GL_COLOR_BUFFER_BIT);
         
         drawRail();
         drawForwardTrace();
@@ -114,7 +124,7 @@ extern (C) int main() {
         drawEnemies();
         drawHero();
         drawObstacles();
-        drawAreaRate();
+        //drawAreaRate();
 
         SDL_GL_SwapWindow(window);
     }
@@ -143,9 +153,11 @@ void resetGame(){
     updateTriangles();
     updateWalls();
 
+    
     enemies.clear();
     enemies ~= Enemy(ENEMY_RADIUS, Point(152, 190), cpVect(0.2, 0.4));
     enemies ~= Enemy(ENEMY_RADIUS, Point(202, 150), cpVect(0.4, 0.2));
-
+    
     obstacles ~= Obstacle(Point(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), 60, 60);
+    
 }

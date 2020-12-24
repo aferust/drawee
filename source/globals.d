@@ -25,6 +25,23 @@ __gshared {
 
     enum HERO_RADIUS = 9.5f;
     int grid_size = 5;
+
+    import primitives; 
+    
+    GLint positionAttribute, uvAttribute;
+    GLuint shaderProgramHero;
+    GLuint shaderProgramEnemy;
+    GLuint shaderProgramPoly;
+    GLuint shaderProgramGreen;
+    GLuint shaderProgramRed;
+
+    Mat4 ortho;
+
+    GLSolidCircle drHero;
+    GLCircle drShield;
+    GLLine drLine;
+    GLPoly drPoly;
+    GLRect drRect;
 }
 
 struct Point {
@@ -41,8 +58,17 @@ struct Circle {
     int radius;
 }
 
-struct Color(T){
-    T r, g, b;
+struct Color{
+    float[4] rgba;
+    alias rgba this;
+    
+    @nogc nothrow:
+    static Color red(){return Color([1.0f, 0.0f, 0.0f, 1.0f]);}
+    static Color green(){return Color([0.0f, 1.0f, 0.0f, 1.0f]);}
+    static Color blue(){return Color([0.0f, 0.0f, 1.0f, 1.0f]);}
+    static Color white(){return Color([1.0f, 1.0f, 1.0f, 1.0f]);}
+    static Color black(){return Color([0.0f, 0.0f, 0.0f, 1.0f]);}
+
 }
 
 // need only for obstacles
@@ -85,7 +111,7 @@ enum {
 enum WALLS_ELASTICITY = 1;
 enum WALLS_FRICTION = 1;
 
-enum ENEMY_RADIUS = 10;
+enum ENEMY_RADIUS = 25;
 
 void sleepMS(T)(T dur){
     version(Windows){

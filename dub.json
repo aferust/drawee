@@ -8,14 +8,15 @@
         "bindbc-sdl": "~>0.13.0",
         "dvector": "~>0.0.5",
         "earcutd": "*",
-        "chipmunkd": "1.0.1+7.0.1"
+        "chipmunkd": "1.0.1+7.0.1",
+        "bettercmath": "*"
     },
     "description": "A volfied-like game WIP.",
     "license": "boost",
     "name": "drawee",
     "versions": [
         "BindSDL_TTF",
-        "GL_31", "GL_AllowDeprecated"
+        "GL_41"
     ],
     "dflags": ["-betterC"],
     "subConfigurations": {

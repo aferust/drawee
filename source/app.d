@@ -58,7 +58,7 @@ extern (C) int main() {
     
     resetGame();
 
-    drHero = GLSolidCircle(shaderProgramHero);
+    drSCircle = GLSolidCircle(shaderProgramHero);
     drShield = GLCircle(shaderProgramGreen);
     drLine = GLLine(shaderProgramGreen);
     drPoly = GLPoly(shaderProgramPoly);

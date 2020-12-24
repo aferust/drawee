@@ -10,8 +10,8 @@ import heroimp;
 
 void drawHero() {
     
-    drHero.set(hero.pos.x, hero.pos.y, float(HERO_RADIUS), Color.blue);
-    drHero.draw();
+    drSCircle.set(hero.pos.x, hero.pos.y, float(HERO_RADIUS), Color.blue);
+    drSCircle.draw();
     if(hero.heroStat == movingOntheRail){
         drShield.set(hero.pos.x, hero.pos.y, float(8.0f + HERO_RADIUS), Color.green);
         drShield.draw();
@@ -21,8 +21,8 @@ void drawHero() {
 
 void drawEnemies(){
     foreach (ref enemy; enemies){
-        drHero.set(enemy.pos.x, enemy.pos.y, float(ENEMY_RADIUS), Color.black);
-        drHero.draw();
+        drSCircle.set(enemy.pos.x, enemy.pos.y, float(ENEMY_RADIUS), Color.black);
+        drSCircle.draw();
     }
 }
 

@@ -37,7 +37,7 @@ __gshared {
 
     Mat4 ortho;
 
-    GLSolidCircle drHero;
+    GLSolidCircle drSCircle;
     GLCircle drShield;
     GLLine drLine;
     GLPoly drPoly;

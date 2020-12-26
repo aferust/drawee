@@ -8,6 +8,12 @@ import heroimp;
 
 @nogc nothrow:
 
+
+void drawBg(){
+    drTRect.set(Rect(0,0,SCREEN_WIDTH,SCREEN_HEIGHT), textureIdBg1);
+    drTRect.draw();
+}
+
 void drawHero() {
     
     drSCircle.set(hero.pos.x, hero.pos.y, float(HERO_RADIUS), Color.blue);
@@ -91,12 +97,8 @@ void drawObstacles(){
     foreach(ref obstacle; obstacles){
         auto w = obstacle.rect.w;
         auto h = obstacle.rect.h;
-        
-        drRect.set(obstacle.rect, Color.green);
-        drRect.draw();
-        line(Point(obstacle.rect.x, obstacle.rect.y),
-            Point(obstacle.rect.diag.x, obstacle.rect.diag.y), Color.red);
-        line(Point(obstacle.rect.x+w, obstacle.rect.y),
-            Point(obstacle.rect.x, obstacle.rect.y+h), Color.red);
+
+        drTRect.set(obstacle.rect, textureIdObstacle);
+        drTRect.draw();
     }
 }

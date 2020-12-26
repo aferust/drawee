@@ -28,20 +28,30 @@ __gshared {
 
     import primitives; 
     
-    GLint positionAttribute, uvAttribute;
+    // shader stuff
+    
     GLuint shaderProgramHero;
     GLuint shaderProgramEnemy;
     GLuint shaderProgramPoly;
     GLuint shaderProgramGreen;
     GLuint shaderProgramRed;
+    GLuint shaderProgramFg;
 
     Mat4 ortho;
 
+    // Drawer objects
     GLSolidCircle drSCircle;
     GLCircle drShield;
     GLLine drLine;
     GLPoly drPoly;
     GLRect drRect;
+    GLTexturedRect drTRect;
+
+    // Texture IDs
+    GLuint textureIdObstacle;
+    GLuint textureIdBg1;
+    GLuint textureIdEnemy1;
+    GLuint textureIdEnemy2;
 }
 
 struct Point {

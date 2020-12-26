@@ -4,6 +4,7 @@ import core.stdc.stdio;
 
 import bindbc.sdl;
 import bindbc.sdl.ttf;
+import bindbc.sdl.image;
 import bindbc.opengl;
 
 import globals;
@@ -80,4 +81,43 @@ int initGL(){
     
     //writeln(retVal);
     return 0;
+}
+
+int initSDLImage(){
+    int flags = IMG_INIT_JPG | IMG_INIT_PNG;
+    int initted = IMG_Init(flags);
+    if((initted & flags) != flags) {
+        printf("IMG_Init: Failed to init required jpg and png support!\n");
+        printf("IMG_Init: %s\n", IMG_GetError());
+
+        return -1;
+    }
+
+    return 0;
+}
+
+GLuint loadTexture(string path){
+    SDL_Surface* texture = IMG_Load(path.ptr);
+
+    uint COLOR_MODEL; 
+    if(texture.format.BytesPerPixel == 3)
+        COLOR_MODEL = GL_RGB;
+    else if (texture.format.BytesPerPixel == 4)
+        COLOR_MODEL = GL_RGBA;
+    
+    GLuint textureId;
+    glGenTextures(1, &textureId); 
+    glBindTexture(GL_TEXTURE_2D, textureId);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture.w, texture.h, 0, COLOR_MODEL, GL_UNSIGNED_BYTE, texture.pixels);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    SDL_FreeSurface(texture);
+
+    return textureId;
 }

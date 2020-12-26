@@ -267,6 +267,7 @@ struct GLPoly {
         glUseProgram(shaderProgram);
         glDrawArrays(GL_TRIANGLES, 0, cast(int)vertices.length/2);
         glDisableVertexAttribArray(0);
+        
         glUseProgram(0);
     }
 
@@ -336,9 +337,106 @@ struct GLRect {
         glUseProgram(shaderProgram);
         glDrawArrays(GL_TRIANGLES, 0, cast(int)vertices.length/2);
         vertices.free();
+        glDisableVertexAttribArray(0);
+        glUseProgram(0);
     }
 }
 
+
+enum VertexAttrib
+{
+    Vertices = 0,
+    Texcoords = 1
+}
+
+struct GLTexturedRect {
+    
+    GLuint shaderProgram;
+    GLuint vao = 0;
+    GLuint vbo = 0;
+    GLuint tbo = 0;
+    GLuint eao = 0;
+
+    GLuint textureId;
+
+    uint[6] indices;
+    float[12] vertices;
+
+    @nogc nothrow:
+
+    this(GLuint shaderProgram){
+        this.shaderProgram = shaderProgram;
+
+        glGenBuffers(1, &vbo);
+        glGenBuffers(1, &tbo);
+        glGenBuffers(1, &eao);
+        glGenVertexArrays(1, &vao);
+    }
+
+    void set(Rect r, GLuint textureId){
+        this.textureId = textureId;
+
+        indices = [ 
+            0, 1, 3, // first triangle
+            1, 2, 3  // second triangle
+        ];
+
+        vertices = [
+            r.x+r.w, r.y,     0.0f,         // top right
+            r.x+r.w, r.y+r.h, 0.0f,        // bottom right
+            r.x, r.y+r.h,     0.0f,         // bottom left
+            r.x, r.y,         0.0f          // top left 
+        ];
+
+        float[8] texcoords = [
+            1.0f, 0.0f,
+            1.0f, 1.0f,
+            0.0f, 1.0f,
+            0.0f, 0.0f
+        ];
+        
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, vertices.length * float.sizeof * 3, vertices.ptr, GL_STATIC_DRAW);
+        
+        glBindBuffer(GL_ARRAY_BUFFER, tbo);
+        glBufferData(GL_ARRAY_BUFFER, texcoords.length * float.sizeof * 2, texcoords.ptr, GL_STATIC_DRAW);
+        
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eao);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.length * uint.sizeof * 3, indices.ptr, GL_STATIC_DRAW);
+        
+        glBindVertexArray(vao);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eao);
+
+        glEnableVertexAttribArray(VertexAttrib.Vertices);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glVertexAttribPointer(VertexAttrib.Vertices, 3, GL_FLOAT, GL_FALSE, 0, null);
+    
+        glEnableVertexAttribArray(VertexAttrib.Texcoords);
+        glBindBuffer(GL_ARRAY_BUFFER, tbo);
+        glVertexAttribPointer(VertexAttrib.Texcoords, 2, GL_FLOAT, GL_FALSE, 0, null);
+
+        glUseProgram(shaderProgram);
+        glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projectionMat"), 1, GL_FALSE, ortho.elements.ptr);
+        glUniform1i(glGetUniformLocation(shaderProgram, "ourTexture"), 0);
+
+        glBindVertexArray(0);
+    }
+
+    void draw(){
+        glBindVertexArray(vao);
+        glBindTexture(GL_TEXTURE_2D, textureId);
+
+        glDrawElements(GL_TRIANGLES, cast(uint)indices.length * 2, GL_UNSIGNED_INT, null);
+
+        glBindVertexArray(0);
+    }
+}
+
+/*
+struct GLTexturedCircle {
+ 
+}
+*/
 
 /+ Shaders +/
 
@@ -399,7 +497,7 @@ GLuint initShader(const char* vShader, const char* fShader, const char* outputAt
     return program;
 }
 
-void loadShaderHero(){
+GLuint loadShaderHero(){
     const char*  vert = q{
         attribute vec4 position;
         uniform mat4 projectionMat;
@@ -415,19 +513,11 @@ void loadShaderHero(){
         }
     };
 
-    shaderProgramHero = initShader(vert,  frag, "ucolor");
-
-    uvAttribute = glGetAttribLocation(shaderProgramHero, "ucolor");
-    if (uvAttribute < 0) {
-        printf("Shader did not contain the 'color' attribute. \n");
-    }
-    positionAttribute = glGetAttribLocation(shaderProgramHero, "position");
-    if (positionAttribute < 0) {
-        printf("Shader did not contain the 'position' attribute. \n");
-    }
+    return initShader(vert,  frag, "ucolor");
+    
 }
 
-void loadShaderEnemy(){
+GLuint loadShaderEnemy(){
     const char*  vert = q{
         attribute vec4 position;
         uniform mat4 projectionMat;
@@ -443,19 +533,10 @@ void loadShaderEnemy(){
         }
     };
 
-    shaderProgramEnemy = initShader(vert,  frag, "fragColor");
-
-    uvAttribute = glGetAttribLocation(shaderProgramEnemy, "uv");
-    if (uvAttribute < 0) {
-        printf("Shader did not contain the 'color' attribute. \n");
-    }
-    positionAttribute = glGetAttribLocation(shaderProgramEnemy, "position");
-    if (positionAttribute < 0) {
-        printf("Shader did not contain the 'position' attribute. \n");
-    }
+    return initShader(vert,  frag, "fragColor");
 }
 
-void loadShaderPoly(){
+GLuint loadShaderPoly(){
     const char*  vert = q{
         attribute vec4 position;
         uniform mat4 projectionMat;
@@ -471,19 +552,10 @@ void loadShaderPoly(){
         }
     };
 
-    shaderProgramPoly = initShader(vert,  frag, "fragColor");
-
-    uvAttribute = glGetAttribLocation(shaderProgramPoly, "uv");
-    if (uvAttribute < 0) {
-        printf("Shader did not contain the 'color' attribute. \n");
-    }
-    positionAttribute = glGetAttribLocation(shaderProgramPoly, "position");
-    if (positionAttribute < 0) {
-        printf("Shader did not contain the 'position' attribute. \n");
-    }
+    return initShader(vert,  frag, "fragColor");
 }
 
-void loadShaderGreen(){
+GLuint loadShaderGreen(){
     const char*  vert = q{
         attribute vec4 position;
         uniform mat4 projectionMat;
@@ -499,19 +571,10 @@ void loadShaderGreen(){
         }
     };
 
-    shaderProgramGreen= initShader(vert,  frag, "fragColor");
-
-    uvAttribute = glGetAttribLocation(shaderProgramGreen, "uv");
-    if (uvAttribute < 0) {
-        printf("Shader did not contain the 'color' attribute. \n");
-    }
-    positionAttribute = glGetAttribLocation(shaderProgramGreen, "position");
-    if (positionAttribute < 0) {
-        printf("Shader did not contain the 'position' attribute. \n");
-    }
+    return initShader(vert,  frag, "fragColor");
 }
 
-void loadShaderRed(){
+GLuint loadShaderRed(){
     const char*  vert = q{
         attribute vec4 position;
         uniform mat4 projectionMat;
@@ -527,14 +590,37 @@ void loadShaderRed(){
         }
     };
 
-    shaderProgramRed = initShader(vert,  frag, "fragColor");
+    return initShader(vert,  frag, "fragColor");
+}
 
-    uvAttribute = glGetAttribLocation(shaderProgramRed, "uv");
-    if (uvAttribute < 0) {
-        printf("Shader did not contain the 'color' attribute. \n");
-    }
-    positionAttribute = glGetAttribLocation(shaderProgramRed, "position");
-    if (positionAttribute < 0) {
-        printf("Shader did not contain the 'position' attribute. \n");
-    }
+GLuint loadShaderFG(){
+    const char*  vert = q{
+        #version 330 core
+        layout (location = 0) in vec3 aPos;
+        layout (location = 1) in vec2 aTexCoord;
+        uniform mat4 projectionMat;
+
+        out vec2 TexCoord;
+
+        void main()
+        {
+            gl_Position = projectionMat * vec4(aPos, 1.0);
+            TexCoord = vec2(aTexCoord.x, aTexCoord.y);
+        }
+    };
+    const char*  frag = q{
+        #version 330 core
+        out vec4 FragColor;
+
+        in vec2 TexCoord;
+
+        uniform sampler2D userTexture;
+
+        void main()
+        {
+            FragColor = texture(userTexture, TexCoord);
+        }
+    };
+
+    return initShader(vert, frag, "fragColor");
 }

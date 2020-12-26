@@ -31,15 +31,21 @@ import obstacleimp;
 extern (C) int main() {
     initSDL();
     initSDLTTF();
+    initSDLImage();
     initGL();
 
-    import primitives;
-    loadShaderHero();
-    loadShaderEnemy();
-    loadShaderPoly();
-    loadShaderGreen();
-    loadShaderRed();
+    textureIdObstacle = loadTexture("img/misslescararmblue.png");
+    textureIdBg1 = loadTexture("img/bg1.png");
+    textureIdEnemy1 = loadTexture("img/enemy1.png");
+    textureIdEnemy1 = loadTexture("img/enemy2.png");
 
+    import primitives;
+    shaderProgramHero = loadShaderHero();
+    shaderProgramEnemy = loadShaderEnemy();
+    shaderProgramPoly = loadShaderPoly();
+    shaderProgramGreen = loadShaderGreen();
+    shaderProgramRed = loadShaderRed();
+    shaderProgramFg = loadShaderFG();
     
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
@@ -63,6 +69,8 @@ extern (C) int main() {
     drLine = GLLine(shaderProgramGreen);
     drPoly = GLPoly(shaderProgramPoly);
     drRect = GLRect(shaderProgramGreen);
+
+    drTRect = GLTexturedRect(shaderProgramFg);
 
 	bool quit;
 
@@ -118,6 +126,7 @@ extern (C) int main() {
 
         glClear(GL_COLOR_BUFFER_BIT);
         
+        drawBg();
         drawRail();
         drawForwardTrace();
         drawBackwardTrace();

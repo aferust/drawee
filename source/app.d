@@ -37,7 +37,7 @@ extern (C) int main() {
     textureIdObstacle = loadTexture("img/misslescararmblue.png");
     textureIdBg1 = loadTexture("img/bg1.png");
     textureIdEnemy1 = loadTexture("img/enemy1.png");
-    textureIdEnemy1 = loadTexture("img/enemy2.png");
+    textureIdEnemy2 = loadTexture("img/enemy2.png");
 
     import primitives;
     shaderProgramHero = loadShaderHero();
@@ -46,9 +46,10 @@ extern (C) int main() {
     shaderProgramGreen = loadShaderGreen();
     shaderProgramRed = loadShaderRed();
     shaderProgramFg = loadShaderFG();
+    shaderProgramEn = loadShaderEn();
     
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     ortho = Mat4.ortho(0.0f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.0f);
 
@@ -70,7 +71,7 @@ extern (C) int main() {
     drPoly = GLPoly(shaderProgramPoly);
     drRect = GLRect(shaderProgramGreen);
 
-    drTRect = GLTexturedRect(shaderProgramFg);
+    drTRect = GLTexturedRect(shaderProgramEn);
 
 	bool quit;
 

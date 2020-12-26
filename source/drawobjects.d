@@ -25,10 +25,18 @@ void drawHero() {
         
 }
 
+bool relay;
 void drawEnemies(){
     foreach (ref enemy; enemies){
-        drSCircle.set(enemy.pos.x, enemy.pos.y, float(ENEMY_RADIUS), Color.black);
-        drSCircle.draw();
+        relay = !relay;
+        auto tex = textureIdEnemy1;
+        if(relay)
+            tex = textureIdEnemy2;
+            
+        drTRect.set(Rect(enemy.pos.x-ENEMY_RADIUS, enemy.pos.y-ENEMY_RADIUS, ENEMY_RADIUS*2, ENEMY_RADIUS*2), tex);
+        drTRect.draw();
+        //drSCircle.set(enemy.pos.x, enemy.pos.y, float(ENEMY_RADIUS), Color.black);
+        //drSCircle.draw();
     }
 }
 

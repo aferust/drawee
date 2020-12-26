@@ -432,11 +432,112 @@ struct GLTexturedRect {
     }
 }
 
-/*
+/+
 struct GLTexturedCircle {
- 
+    Dvector!float vertices;
+    Dvector!float texcoords;
+    uint[6] indices;
+
+    GLuint shaderProgram;
+    GLuint vao = 0;
+    GLuint vbo = 0;
+    GLuint tbo = 0;
+    GLuint eao = 0;
+
+    GLuint textureId;
+
+    @nogc nothrow:
+
+    this(GLuint shaderProgram){
+        this.shaderProgram = shaderProgram;      
+
+        glGenBuffers(1, &vbo);
+        glGenBuffers(1, &tbo);
+        glGenBuffers(1, &eao);
+        glGenVertexArrays(1, &vao);
+        
+        enum quality = 0.125;
+	    int triangleAmount = cast(int)(SCREEN_WIDTH * quality);
+
+        vertices ~= 0; 
+		vertices ~= 0;
+		
+        foreach(i; 0..triangleAmount) { 
+		    vertices ~= 0; 
+			vertices ~= 0;
+            texcoords ~= 0;
+            texcoords ~= 0;
+		}
+
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, vertices.length * float.sizeof, vertices[].ptr, GL_STREAM_DRAW);
+    }
+
+    void set(int x, int y, float radius, GLuint textureId){        
+        this.textureId = textureId;
+
+        indices = [ 
+            0, 1, 3, // first triangle
+            1, 2, 3  // second triangle
+        ];
+
+        enum quality = 0.125;
+	    int triangleAmount = cast(int)(SCREEN_WIDTH * quality);
+        
+        int i;
+        foreach(ref c; chunks(vertices[], 2)) {
+		    c[0] = x + (radius * cos(i *  2*PI / float(triangleAmount))); 
+            c[1] = y + (radius * sin(i * 2*PI / float(triangleAmount)));
+
+            texcoords[2*i] = (c[0]/radius + 1)*0.5;
+            texcoords[2*i+1] = (c[1]/radius + 1)*0.5;
+            ++i;
+		}
+
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, vertices.length * float.sizeof, vertices[].ptr, GL_STREAM_DRAW);
+
+        glBindBuffer(GL_ARRAY_BUFFER, tbo);
+        glBufferData(GL_ARRAY_BUFFER, texcoords.length * float.sizeof * 2, texcoords[].ptr, GL_STATIC_DRAW);
+
+        glUseProgram(shaderProgram);
+        /*
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eao);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.length * uint.sizeof * 3, indices.ptr, GL_STATIC_DRAW);
+        
+        glBindVertexArray(vao);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eao);
+        */
+        glEnableVertexAttribArray(VertexAttrib.Vertices);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glVertexAttribPointer(VertexAttrib.Vertices, 2, GL_FLOAT, GL_FALSE, 0, null);
+
+        glEnableVertexAttribArray(VertexAttrib.Texcoords);
+        glBindBuffer(GL_ARRAY_BUFFER, tbo);
+        glVertexAttribPointer(VertexAttrib.Texcoords, 2, GL_FLOAT, GL_FALSE, 0, null);
+
+        GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
+        glVertexAttribPointer(posAttrib, 2, GL_FLOAT, false, uint(0), null);
+        glEnableVertexAttribArray(posAttrib);
+
+        auto pmAtt = glGetUniformLocation(shaderProgram, "projectionMat");
+        glUniformMatrix4fv(pmAtt, 1, GL_FALSE, ortho.elements.ptr);
+    }
+
+    void draw() {
+        
+        glBindVertexArray(vao);
+        glBindTexture(GL_TEXTURE_2D, textureId);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, cast(int)vertices.length/2);
+        //glDisableVertexAttribArray(0);
+        glUseProgram(0);
+    }
+
+    ~this(){
+        vertices.free();
+    }
 }
-*/
++/
 
 /+ Shaders +/
 
@@ -605,7 +706,39 @@ GLuint loadShaderFG(){
         void main()
         {
             gl_Position = projectionMat * vec4(aPos, 1.0);
-            TexCoord = vec2(aTexCoord.x, aTexCoord.y);
+            TexCoord = aTexCoord;
+        }
+    };
+    const char*  frag = q{
+        #version 330 core
+        out vec4 FragColor;
+
+        in vec2 TexCoord;
+
+        uniform sampler2D userTexture;
+
+        void main()
+        {
+            FragColor = texture(userTexture, TexCoord);
+        }
+    };
+
+    return initShader(vert, frag, "fragColor");
+}
+
+GLuint loadShaderEn(){
+    const char*  vert = q{
+        #version 330 core
+        layout (location = 0) in vec3 aPos;
+        layout (location = 1) in vec2 aTexCoord;
+        uniform mat4 projectionMat;
+
+        out vec2 TexCoord;
+
+        void main()
+        {
+            gl_Position = projectionMat * vec4(aPos, 1.0);
+            TexCoord = aTexCoord;
         }
     };
     const char*  frag = q{

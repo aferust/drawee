@@ -26,15 +26,17 @@ int initSDL(){
         }
 
     }
-    //Use OpenGL 3.1 core
-    SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
-    SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 2 );
+    
+    SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 4 );
+    SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 1 );
     SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
     
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0){
         logSDLError("SDL_Init Error: ");
         return 1;
     }
+    
+    SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 1 );
     
     return 0;
 }

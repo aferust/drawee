@@ -36,6 +36,7 @@ extern (C) int main() {
 
     textureIdObstacle = loadTexture("img/misslescararmblue.png");
     textureIdBg1 = loadTexture("img/bg1.png");
+    textureIdFg = loadTexture("img/fg.png");
     textureIdEnemy1 = loadTexture("img/enemy1.png");
     textureIdEnemy2 = loadTexture("img/enemy2.png");
 

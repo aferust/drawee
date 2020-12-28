@@ -50,7 +50,7 @@ __gshared {
 
     // Texture IDs
     GLuint textureIdObstacle;
-    GLuint textureIdBg1;
+    GLuint textureIdBg1, textureIdFg;
     GLuint textureIdEnemy1;
     GLuint textureIdEnemy2;
 }

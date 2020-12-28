@@ -379,7 +379,7 @@ struct GLTexturedRect {
         alias Transform3D = Transform!(float, 3);
         alias Vec3 = Vector!(float, 3);
 
-        auto zeroTranslation = Vec3(0.5 * r.w, 0.5 * r.h);
+        auto zeroTranslation = Vec3(-r.x - r.w*0.5, -r.y - r.h*0.5);
         auto model = Transform3D()
             .translate(zeroTranslation)
             .rotateZ(angle)

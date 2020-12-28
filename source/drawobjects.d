@@ -93,19 +93,7 @@ void drawBackwardTrace() {
 void drawRail(){
 
     import bindbc.opengl;
-    /*
-    glStencilOp( GL_REPLACE, GL_KEEP, GL_KEEP);
-    glStencilFunc( GL_ALWAYS, 1, 0xFF );
-    
-    drPoly.set(Color.white);
-    drPoly.draw();
 
-    glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
-    glStencilFunc( GL_EQUAL, 1, 0xFF );
-
-    drTRect.set(Rect(0,0,SCREEN_WIDTH,SCREEN_HEIGHT),textureIdFg, 0);
-    drTRect.draw();
-    */
     glClear(GL_DEPTH_BUFFER_BIT);
     glEnable(GL_STENCIL_TEST);
     glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);

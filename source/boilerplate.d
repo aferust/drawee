@@ -114,7 +114,7 @@ GLuint loadTexture(string path){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture.w, texture.h, 0, COLOR_MODEL, GL_UNSIGNED_BYTE, texture.pixels);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture.w, texture.h, 0, COLOR_MODEL, GL_UNSIGNED_BYTE, texture.pixels);
     glGenerateMipmap(GL_TEXTURE_2D);
 
     SDL_FreeSurface(texture);

@@ -342,91 +342,71 @@ struct GLRect {
     }
 }
 
-
-enum VertexAttrib
-{
-    Vertices = 0,
-    Texcoords = 1
-}
-
 struct GLTexturedRect {
     
     GLuint shaderProgram;
     GLuint vao = 0;
     GLuint vbo = 0;
-    GLuint tbo = 0;
-    GLuint eao = 0;
 
     GLuint textureId;
 
-    uint[6] indices;
-    float[12] vertices;
+    float[24] vertices;
 
     @nogc nothrow:
 
     this(GLuint shaderProgram){
         this.shaderProgram = shaderProgram;
 
-        glGenBuffers(1, &vbo);
-        glGenBuffers(1, &tbo);
-        glGenBuffers(1, &eao);
         glGenVertexArrays(1, &vao);
+        glGenBuffers(1, &vbo);
+        
     }
 
-    void set(Rect r, GLuint textureId){
+    void set(Rect r, GLuint textureId, float angle){
         this.textureId = textureId;
 
-        indices = [ 
-            0, 1, 3, // first triangle
-            1, 2, 3  // second triangle
-        ];
-
         vertices = [
-            r.x+r.w, r.y,     0.0f,         // top right
-            r.x+r.w, r.y+r.h, 0.0f,        // bottom right
-            r.x, r.y+r.h,     0.0f,         // bottom left
-            r.x, r.y,         0.0f          // top left 
+            r.x, r.y+r.h,      0.0f, 1.0f,
+            r.x+r.w, r.y,      1.0f, 0.0f,
+            r.x, r.y,          0.0f, 0.0f,
+            
+            r.x, r.y+r.h,      0.0f, 1.0f,
+            r.x+r.w, r.y+r.h,  1.0f, 1.0f,
+            r.x+r.w, r.y,      1.0f, 0.0f
         ];
 
-        float[8] texcoords = [
-            1.0f, 0.0f,
-            1.0f, 1.0f,
-            0.0f, 1.0f,
-            0.0f, 0.0f
-        ];
-        
+
+        alias Transform3D = Transform!(float, 3);
+        alias Vec3 = Vector!(float, 3);
+
+        auto zeroTranslation = Vec3(0.5 * r.w, 0.5 * r.h);
+        auto model = Transform3D()
+            .translate(zeroTranslation)
+            .rotateZ(angle)
+            .translate(-zeroTranslation);
+
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, vertices.length * float.sizeof * 3, vertices.ptr, GL_STATIC_DRAW);
-        
-        glBindBuffer(GL_ARRAY_BUFFER, tbo);
-        glBufferData(GL_ARRAY_BUFFER, texcoords.length * float.sizeof * 2, texcoords.ptr, GL_STATIC_DRAW);
-        
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eao);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.length * uint.sizeof * 3, indices.ptr, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, vertices.length * float.sizeof, vertices.ptr, GL_STATIC_DRAW);
         
         glBindVertexArray(vao);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eao);
 
-        glEnableVertexAttribArray(VertexAttrib.Vertices);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glVertexAttribPointer(VertexAttrib.Vertices, 3, GL_FLOAT, GL_FALSE, 0, null);
-    
-        glEnableVertexAttribArray(VertexAttrib.Texcoords);
-        glBindBuffer(GL_ARRAY_BUFFER, tbo);
-        glVertexAttribPointer(VertexAttrib.Texcoords, 2, GL_FLOAT, GL_FALSE, 0, null);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * float.sizeof, cast(void*)0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         glUseProgram(shaderProgram);
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projectionMat"), 1, GL_FALSE, ortho.elements.ptr);
-        glUniform1i(glGetUniformLocation(shaderProgram, "ourTexture"), 0);
+        glUniform1i(glGetUniformLocation(shaderProgram, "userTexture"), 0);
+        glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "modelMat"), 1, GL_FALSE, model.elements.ptr);
 
         glBindVertexArray(0);
     }
 
     void draw(){
-        glBindVertexArray(vao);
         glBindTexture(GL_TEXTURE_2D, textureId);
-
-        glDrawElements(GL_TRIANGLES, cast(uint)indices.length * 2, GL_UNSIGNED_INT, null);
+        glBindVertexArray(vao);
+        
+        glDrawArrays(GL_TRIANGLES, 0, 6);
 
         glBindVertexArray(0);
     }
@@ -697,15 +677,16 @@ GLuint loadShaderRed(){
 GLuint loadShaderFG(){
     const char*  vert = q{
         #version 330 core
-        layout (location = 0) in vec3 aPos;
+        layout (location = 0) in vec4 aPos;
         layout (location = 1) in vec2 aTexCoord;
         uniform mat4 projectionMat;
+        uniform mat4 modelMat;
 
         out vec2 TexCoord;
 
         void main()
         {
-            gl_Position = projectionMat * vec4(aPos, 1.0);
+            gl_Position = projectionMat * modelMat * vec4(aPos.xy, 0.0, 1.0);
             TexCoord = aTexCoord;
         }
     };
@@ -718,7 +699,7 @@ GLuint loadShaderFG(){
         uniform sampler2D userTexture;
 
         void main()
-        {
+        {   
             FragColor = texture(userTexture, TexCoord);
         }
     };
@@ -729,29 +710,29 @@ GLuint loadShaderFG(){
 GLuint loadShaderEn(){
     const char*  vert = q{
         #version 330 core
-        layout (location = 0) in vec3 aPos;
-        layout (location = 1) in vec2 aTexCoord;
-        uniform mat4 projectionMat;
+        layout (location = 0) in vec4 vertex;
+        out vec2 TexCoords;
 
-        out vec2 TexCoord;
+        uniform mat4 projectionMat;
+        uniform mat4 modelMat;
 
         void main()
         {
-            gl_Position = projectionMat * vec4(aPos, 1.0);
-            TexCoord = aTexCoord;
+            TexCoords = vertex.zw;
+            gl_Position = projectionMat * modelMat * vec4(vertex.xy, 0.0, 1.0);
         }
     };
     const char*  frag = q{
         #version 330 core
         out vec4 FragColor;
 
-        in vec2 TexCoord;
+        in vec2 TexCoords;
 
         uniform sampler2D userTexture;
 
         void main()
-        {
-            FragColor = texture(userTexture, TexCoord);
+        {   
+            FragColor = texture(userTexture, TexCoords);
         }
     };
 

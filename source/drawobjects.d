@@ -10,7 +10,7 @@ import heroimp;
 
 
 void drawBg(){
-    drTRect.set(Rect(0,0,SCREEN_WIDTH,SCREEN_HEIGHT), textureIdBg1);
+    drTRect.set(Rect(0,0,SCREEN_WIDTH,SCREEN_HEIGHT), textureIdBg1, 0.0f);
     drTRect.draw();
 }
 
@@ -27,7 +27,7 @@ void drawHero() {
 
 void drawEnemies(){
     foreach (ref enemy; enemies){            
-        drTRect.set(Rect(enemy.pos.x-ENEMY_RADIUS, enemy.pos.y-ENEMY_RADIUS, ENEMY_RADIUS*2, ENEMY_RADIUS*2), textureIdEnemy1);
+        drTRect.set(Rect(enemy.pos.x-ENEMY_RADIUS, enemy.pos.y-ENEMY_RADIUS, ENEMY_RADIUS*2, ENEMY_RADIUS*2), textureIdEnemy1, enemy.angle);
         drTRect.draw();
         //drSCircle.set(enemy.pos.x, enemy.pos.y, float(ENEMY_RADIUS), Color.black);
         //drSCircle.draw();
@@ -100,7 +100,7 @@ void drawObstacles(){
         auto w = obstacle.rect.w;
         auto h = obstacle.rect.h;
 
-        drTRect.set(obstacle.rect, textureIdObstacle);
+        drTRect.set(obstacle.rect, textureIdObstacle, 0.0f);
         drTRect.draw();
     }
 }

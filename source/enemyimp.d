@@ -10,6 +10,7 @@ import globals;
 
 struct Enemy {
     Point pos;
+    float angle;
 
     cpBody *_body;
     cpShape *shape;
@@ -20,11 +21,12 @@ struct Enemy {
         return Circle(pos, ENEMY_RADIUS);
     }
 
-    this(int radius, Point p, cpVect velocity){
+    this(int radius, Point p, cpVect velocity, float angularVel){
         pos = p;
         _body = cpBodyNew(1, cpMomentForCircle (0.5, 0, radius, cpVect(0, 0)));
         cpBodySetPosition(_body, cpVect(p.x, p.y));
         cpBodySetVelocity(_body, velocity);
+        cpBodySetAngularVelocity(_body, angularVel);
 
         shape = cpCircleShapeNew(_body, radius, cpVect(0, 0));
 
@@ -38,6 +40,9 @@ struct Enemy {
 
     void update(/*double dt*/){
         auto bp = cpBodyGetPosition(_body);
+        cpVect or = cpBodyGetRotation(_body);
+        angle = cpBodyGetAngle(_body);
+
         pos = Point(cast(int)bp.x, cast(int)bp.y);
     }
 }

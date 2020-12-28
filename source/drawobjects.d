@@ -27,10 +27,8 @@ void drawHero() {
 
 void drawEnemies(){
     foreach (ref enemy; enemies){            
-        drTRect.set(Rect(enemy.pos.x-ENEMY_RADIUS, enemy.pos.y-ENEMY_RADIUS, ENEMY_RADIUS*2, ENEMY_RADIUS*2), textureIdEnemy1, enemy.angle);
+        drTRect.set(Rect(enemy.pos.x-ENEMY_RADIUS, enemy.pos.y-ENEMY_RADIUS, ENEMY_RADIUS*2, ENEMY_RADIUS*2), enemy.textureId, enemy.angle);
         drTRect.draw();
-        //drSCircle.set(enemy.pos.x, enemy.pos.y, float(ENEMY_RADIUS), Color.black);
-        //drSCircle.draw();
     }
 }
 

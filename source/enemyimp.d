@@ -14,6 +14,8 @@ struct Enemy {
 
     cpBody *_body;
     cpShape *shape;
+
+    uint textureId;
     
     @nogc nothrow:
 
@@ -21,7 +23,8 @@ struct Enemy {
         return Circle(pos, ENEMY_RADIUS);
     }
 
-    this(int radius, Point p, cpVect velocity, float angularVel){
+    this(int radius, Point p, cpVect velocity, float angularVel, uint textureId){
+        this.textureId = textureId;
         pos = p;
         _body = cpBodyNew(1, cpMomentForCircle (0.5, 0, radius, cpVect(0, 0)));
         cpBodySetPosition(_body, cpVect(p.x, p.y));

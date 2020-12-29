@@ -587,7 +587,7 @@ GLuint loadShaderHero(){
         }
     };
     const char*  frag = q{
-        precision mediump float;
+        
         uniform vec4 ucolor;
         void main() {
             gl_FragColor = ucolor;
@@ -607,7 +607,7 @@ GLuint loadShaderEnemy(){
         }
     };
     const char*  frag = q{
-        precision mediump float;
+        
         uniform vec4 ucolor;
         void main() {
             gl_FragColor = ucolor;
@@ -626,7 +626,7 @@ GLuint loadShaderPoly(){
         }
     };
     const char*  frag = q{
-        precision mediump float;
+        
         uniform vec4 ucolor;
         void main() {
             gl_FragColor = ucolor;
@@ -645,7 +645,7 @@ GLuint loadShaderGreen(){
         }
     };
     const char*  frag = q{
-        precision mediump float;
+        
         uniform vec4 ucolor;
         void main() {
             gl_FragColor = ucolor;
@@ -664,7 +664,7 @@ GLuint loadShaderRed(){
         }
     };
     const char*  frag = q{
-        precision mediump float;
+        
         uniform vec4 ucolor;
         void main() {
             gl_FragColor = ucolor;

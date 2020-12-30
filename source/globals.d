@@ -39,6 +39,7 @@ __gshared {
     GLuint shaderProgramRed;
     GLuint shaderProgramFg;
     GLuint shaderProgramEn;
+    GLuint shaderProgramText;
 
     Mat4 ortho;
 

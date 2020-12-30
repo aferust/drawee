@@ -51,13 +51,14 @@ extern (C) int main() {
     shaderProgramRed = loadShaderRed();
     shaderProgramFg = loadShaderFG();
     shaderProgramEn = loadShaderEn();
+    shaderProgramText = loadShaderText();
     
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     ortho = Mat4.ortho(0.0f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.0f);
 
-    glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+    glClearColor(0.2f, 0.2f, 1.0f, 1.0f);
 
     space = cpSpaceNew();
 
@@ -74,7 +75,7 @@ extern (C) int main() {
     drLine = GLLine(shaderProgramGreen);
     drPoly = GLPoly(shaderProgramPoly);
     drRect = GLRect(shaderProgramGreen);
-    drText = GLText(shaderProgramGreen);
+    drText = GLText(shaderProgramText);
 
     drTRect = GLTexturedRect(shaderProgramEn);
 
@@ -84,6 +85,8 @@ extern (C) int main() {
     
     float dt = 0;
     int gTimer;
+
+    rate = 0.0f;
     
     sleepMS(500);
 
@@ -139,8 +142,7 @@ extern (C) int main() {
         drawEnemies();
         drawHero();
         drawObstacles();
-        //drawScore(); // WIP
-        //drawText("selam", 100, 100);
+        drawScore();
 
         SDL_GL_SwapWindow(window);
     }

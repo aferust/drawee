@@ -127,35 +127,13 @@ GLuint loadTexture(string path){
 TTF_Font* getFontWithSize(string path, int size){
     return TTF_OpenFont(path.ptr, size);
 }
-/*
-FontInfo loadTextureFont(TTF_Font* ttfFont, Color color, char* message){
-    
-    auto clr = SDL_Color(cast(ubyte)(color[0]*255), cast(ubyte)(color[1]*255),cast(ubyte)(color[2]*255));
-    SDL_Surface* texture = TTF_RenderUTF8_Blended(ttfFont, message, clr);
-    
-    GLuint textureId;
-    glGenTextures(1, &textureId); 
-    glBindTexture(GL_TEXTURE_2D, textureId);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture.w, texture.h, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture.pixels);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    SDL_FreeSurface(texture);
-
-    return FontInfo(textureId, texture.w, texture.h);
-}
-*/
 FontSet initMemoryFontSet(TTF_Font* ttfFont, Color color){
     FontSet chartSet;
-    foreach(char a; '0'..'z'){
+    foreach(char a; '!'..'~'){
         auto clr = SDL_Color(cast(ubyte)(color[0]*255), cast(ubyte)(color[1]*255),cast(ubyte)(color[2]*255));
         
-        char[4] buff;
+        char[2] buff;
         sprintf(buff.ptr, "%c\0", a);
         
         SDL_Surface* texture = TTF_RenderUTF8_Blended(ttfFont, buff.ptr, clr);

@@ -807,3 +807,35 @@ GLuint loadShaderEn(){
 
     return initShader(vert, frag, "fragColor");
 }
+
+GLuint loadShaderText(){
+    const char*  vert = q{
+        #version 330 core
+        layout (location = 0) in vec4 vertex;
+        out vec2 TexCoords;
+
+        uniform mat4 projectionMat;
+        uniform mat4 modelMat;
+
+        void main()
+        {
+            TexCoords = vertex.zw;
+            gl_Position = projectionMat * modelMat * vec4(vertex.xy, 0.0, 1.0);
+        }
+    };
+    const char*  frag = q{
+        #version 330 core
+        out vec4 FragColor;
+
+        in vec2 TexCoords;
+
+        uniform sampler2D userTexture;
+
+        void main()
+        {   
+            FragColor = texture(userTexture, TexCoords);
+        }
+    };
+
+    return initShader(vert, frag, "fragColor");
+}

@@ -126,27 +126,21 @@ void drawObstacles(){
         drTRect.draw();
     }
 }
-/*
+
 void drawScore(){
     import core.stdc.stdio: sprintf;
-    import boilerplate: loadTextureFont;
-    import bindbc.opengl;
+    import std.exception;
+    char[10] buffer;
 
-    char[6] buffer;
-
-    sprintf(buffer.ptr, "%f", rate);
-    auto tf = loadTextureFont(fontArea, Color.green, buffer.ptr);
-
-    drTRect.set(Rect(10, SCREEN_HEIGHT + 10, tf.w, tf.h), tf.textureId, 0.0f);
-    drTRect.draw();
-
-    //glDeleteTextures(1, &tf.textureId);
+    sprintf(buffer.ptr, "%0.2f %% \0", rate);
+    drawText(assumeUnique(buffer[]), 20, SCREEN_HEIGHT - FOOTER_HEIGHT + 20);
 }
-*/
+
+
 void drawText(string str, int x, int y){
 
     int accumW;
-    foreach (i, char c; str){
+    foreach (char c; str){
         
         auto cimg = charSet[c];
 

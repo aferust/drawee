@@ -130,7 +130,7 @@ TTF_Font* getFontWithSize(string path, int size){
 
 FontSet initMemoryFontSet(TTF_Font* ttfFont, Color color){
     FontSet chartSet;
-    foreach(char a; '!'..'~'){
+    foreach(char a; ' '..'~'){
         auto clr = SDL_Color(cast(ubyte)(color[0]*255), cast(ubyte)(color[1]*255),cast(ubyte)(color[2]*255));
         
         char[2] buff;

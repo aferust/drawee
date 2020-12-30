@@ -10,7 +10,7 @@ import heroimp;
 
 
 void drawBg(){
-    drTRect.set(Rect(0,0,SCREEN_WIDTH,SCREEN_HEIGHT), textureIdBg1, 0.0f);
+    drTRect.set(Rect(0,0,SCREEN_WIDTH,SCREEN_HEIGHT - FOOTER_HEIGHT), textureIdBg1, 0.0f);
     drTRect.draw();
 }
 
@@ -128,4 +128,20 @@ void drawObstacles(){
         drTRect.set(obstacle.rect, textureIdObstacle, 0.0f);
         drTRect.draw();
     }
+}
+
+void drawScore(){
+    import core.stdc.stdio: sprintf;
+    import boilerplate: loadTextureFont;
+    import bindbc.opengl;
+
+    char[6] buffer;
+
+    sprintf(buffer.ptr, "%f", rate);
+    auto tf = loadTextureFont(fontArea, Color.green, buffer.ptr);
+
+    drTRect.set(Rect(10, SCREEN_HEIGHT + 10, tf.w, tf.h), tf.textureId, 0.0f);
+    drTRect.draw();
+
+    //glDeleteTextures(1, &tf.textureId);
 }

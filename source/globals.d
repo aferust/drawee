@@ -17,7 +17,8 @@ __gshared {
     SDL_Window *window;
 
     enum SCREEN_WIDTH  = 800;
-    enum SCREEN_HEIGHT = 600;
+    enum SCREEN_HEIGHT = 700;
+    enum FOOTER_HEIGHT = 100;
     enum totalArea = SCREEN_WIDTH * SCREEN_HEIGHT;
 
     enum FPS = 60;
@@ -53,6 +54,15 @@ __gshared {
     GLuint textureIdBg1, textureIdFg;
     GLuint textureIdEnemy1;
     GLuint textureIdEnemy2;
+    GLuint textureFontArea;
+
+    TTF_Font* fontArea;
+}
+
+struct FontInfo {
+    GLuint textureId;
+    int w;
+    int h;
 }
 
 struct Point {

@@ -34,11 +34,13 @@ extern (C) int main() {
     initSDLImage();
     initGL();
 
-    textureIdObstacle = loadTexture("img/misslescararmblue.png");
-    textureIdBg1 = loadTexture("img/bg1.png");
-    textureIdFg = loadTexture("img/fg.png");
-    textureIdEnemy1 = loadTexture("img/enemy1.png");
-    textureIdEnemy2 = loadTexture("img/enemy2.png");
+    textureIdObstacle = loadTexture("res/misslescararmblue.png");
+    textureIdBg1 = loadTexture("res/bg1.png");
+    textureIdFg = loadTexture("res/fg.png");
+    textureIdEnemy1 = loadTexture("res/enemy1.png");
+    textureIdEnemy2 = loadTexture("res/enemy2.png");
+
+    fontArea = getFontWithSize("res/Fontin-Regular.ttf", 20);
 
     import primitives;
     shaderProgramHero = loadShaderHero();
@@ -135,7 +137,7 @@ extern (C) int main() {
         drawEnemies();
         drawHero();
         drawObstacles();
-        //drawAreaRate();
+        // drawScore(); // WIP
 
         SDL_GL_SwapWindow(window);
     }
@@ -151,12 +153,12 @@ extern (C) int main() {
 }
 
 void resetGame(){
-    hero = Hero(Point(SCREEN_WIDTH/2, SCREEN_HEIGHT));
+    hero = Hero(Point(SCREEN_WIDTH/2, SCREEN_HEIGHT - FOOTER_HEIGHT));
 
     rail.clear();
     rail.pushBack(Point(0, 0));
-    rail.pushBack(Point(0, SCREEN_HEIGHT));
-    rail.pushBack(Point(SCREEN_WIDTH, SCREEN_HEIGHT));
+    rail.pushBack(Point(0, SCREEN_HEIGHT - FOOTER_HEIGHT));
+    rail.pushBack(Point(SCREEN_WIDTH, SCREEN_HEIGHT - FOOTER_HEIGHT));
     rail.pushBack(Point(SCREEN_WIDTH, 0));
 
     rate = 0.0f;

@@ -40,7 +40,7 @@ extern (C) int main() {
     textureIdEnemy1 = loadTexture("res/enemy1.png");
     textureIdEnemy2 = loadTexture("res/enemy2.png");
 
-    fontArea = getFontWithSize("res/Fontin-Regular.ttf", 20);
+    fontArea = getFontWithSize("res/Fontin-Regular.ttf", 30);
     charSet = initMemoryFontSet(fontArea, Color.green);
 
     import primitives;

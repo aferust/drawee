@@ -41,6 +41,7 @@ extern (C) int main() {
     textureIdEnemy2 = loadTexture("res/enemy2.png");
 
     fontArea = getFontWithSize("res/Fontin-Regular.ttf", 20);
+    charSet = initMemoryFontSet(fontArea, Color.green);
 
     import primitives;
     shaderProgramHero = loadShaderHero();
@@ -73,6 +74,7 @@ extern (C) int main() {
     drLine = GLLine(shaderProgramGreen);
     drPoly = GLPoly(shaderProgramPoly);
     drRect = GLRect(shaderProgramGreen);
+    drText = GLText(shaderProgramGreen);
 
     drTRect = GLTexturedRect(shaderProgramEn);
 
@@ -137,7 +139,8 @@ extern (C) int main() {
         drawEnemies();
         drawHero();
         drawObstacles();
-        // drawScore(); // WIP
+        //drawScore(); // WIP
+        //drawText("selam", 100, 100);
 
         SDL_GL_SwapWindow(window);
     }

@@ -122,14 +122,11 @@ void drawRail(){
 
 void drawObstacles(){
     foreach(ref obstacle; obstacles){
-        auto w = obstacle.rect.w;
-        auto h = obstacle.rect.h;
-
         drTRect.set(obstacle.rect, textureIdObstacle, 0.0f);
         drTRect.draw();
     }
 }
-
+/*
 void drawScore(){
     import core.stdc.stdio: sprintf;
     import boilerplate: loadTextureFont;
@@ -144,4 +141,19 @@ void drawScore(){
     drTRect.draw();
 
     //glDeleteTextures(1, &tf.textureId);
+}
+*/
+void drawText(string str, int x, int y){
+
+    int accumW;
+    foreach (i, char c; str){
+        
+        auto cimg = charSet[c];
+
+        drText.set(Rect(x + accumW, y, cimg.w, cimg.h), cimg.textureId, 0f);
+        drText.draw();
+
+        accumW += cimg.w;
+    }
+
 }

@@ -412,6 +412,75 @@ struct GLTexturedRect {
     }
 }
 
+struct GLText {
+    
+    GLuint shaderProgram;
+    GLuint vao = 0;
+    GLuint vbo = 0;
+
+    GLuint textureId;
+
+    float[24] vertices;
+
+    @nogc nothrow:
+
+    this(GLuint shaderProgram){
+        this.shaderProgram = shaderProgram;
+
+        glGenVertexArrays(1, &vao);
+        glGenBuffers(1, &vbo);
+        
+    }
+
+    void set(Rect r, GLuint textureId, float angle){
+        this.textureId = textureId;
+
+        vertices = [
+            r.x, r.y+r.h,      0.0f, 1.0f,
+            r.x+r.w, r.y,      1.0f, 0.0f,
+            r.x, r.y,          0.0f, 0.0f,
+            
+            r.x, r.y+r.h,      0.0f, 1.0f,
+            r.x+r.w, r.y+r.h,  1.0f, 1.0f,
+            r.x+r.w, r.y,      1.0f, 0.0f
+        ];
+
+
+        alias Transform3D = Transform!(float, 3);
+        alias Vec3 = Vector!(float, 3);
+
+        auto zeroTranslation = Vec3(-r.x - r.w*0.5, -r.y - r.h*0.5);
+        auto model = Transform3D()
+            .translate(zeroTranslation)
+            .rotateZ(angle)
+            .translate(-zeroTranslation);
+
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, vertices.length * float.sizeof, vertices.ptr, GL_STATIC_DRAW);
+        
+        glBindVertexArray(vao);
+
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * float.sizeof, cast(void*)0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        glUseProgram(shaderProgram);
+        glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projectionMat"), 1, GL_FALSE, ortho.elements.ptr);
+        glUniform1i(glGetUniformLocation(shaderProgram, "userTexture"), 0);
+        glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "modelMat"), 1, GL_FALSE, model.elements.ptr);
+
+        glBindVertexArray(0);
+    }
+
+    void draw(){
+        glBindTexture(GL_TEXTURE_2D, textureId);
+        glBindVertexArray(vao);
+        
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        glBindVertexArray(0);
+    }
+}
 /+
 struct GLTexturedCircle {
     Dvector!float vertices;

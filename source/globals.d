@@ -5,6 +5,7 @@ import std.typecons;
 import bindbc.sdl;
 import bindbc.opengl;
 import dvector;
+import bcaa;
 import chipmunk;
 
 import heroimp;
@@ -48,6 +49,7 @@ __gshared {
     GLPoly drPoly;
     GLRect drRect;
     GLTexturedRect drTRect;
+    GLText drText;
 
     // Texture IDs
     GLuint textureIdObstacle;
@@ -57,7 +59,10 @@ __gshared {
     GLuint textureFontArea;
 
     TTF_Font* fontArea;
+    FontSet charSet;
 }
+
+alias FontSet = Bcaa!(char, FontInfo);
 
 struct FontInfo {
     GLuint textureId;

@@ -150,9 +150,9 @@ FontSet initMemoryFontSet(TTF_Font* ttfFont, Color color){
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture.w, texture.h, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture.pixels);
         glGenerateMipmap(GL_TEXTURE_2D);
 
-        SDL_FreeSurface(texture);
-
         chartSet[a] = FontInfo(textureId, texture.w, texture.h);
+
+        SDL_FreeSurface(texture);
     }
 
     return chartSet;

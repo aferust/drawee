@@ -25,6 +25,7 @@ import heroimp;
 import tween;
 import enemyimp;
 import obstacleimp;
+import msgnode;
 
 @nogc nothrow:
 
@@ -100,6 +101,9 @@ extern (C) int main() {
                     case SDLK_r:
                         resetGame();
                         break;
+                    case SDLK_p:
+                        pause = !pause;
+                        break;
                     default:
                         break;
                 }
@@ -113,19 +117,23 @@ extern (C) int main() {
             }*/
         }
 
-        if(hero.alive == true && hero.heroStat != dead)
-            dieIfCollide();
+        if(!pause){
+            if(hero.alive == true && hero.heroStat != dead)
+                dieIfCollide();
 
-        hero.update(clock.dt);
-        proceedActions(clock.dt);
+            hero.update(clock.dt);
 
-        foreach (ref enemy; enemies){
-            enemy.update();
-        }
-        
-        if(clock.dt > 0) 
+            foreach (ref enemy; enemies){
+                enemy.update();
+            }
+            
             cpSpaceStep(space, clock.dt);
 
+
+            proceedActions(actions, clock.dt);
+        }
+
+        proceedActions(sceneActions, clock.dt);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         
@@ -137,6 +145,7 @@ extern (C) int main() {
         drawHero();
         drawObstacles();
         drawScore();
+        drawMsgNode();
 
         SDL_GL_SwapWindow(window);
 
@@ -154,7 +163,11 @@ extern (C) int main() {
 }
 
 void resetGame(){
+    openCerenomy();
+
     hero = Hero(Point(SCREEN_WIDTH/2, SCREEN_HEIGHT - FOOTER_HEIGHT));
+
+    msgNode = MsgNode(Point(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), false, "Get ready");
 
     rail.clear();
     rail.pushBack(Point(0, 0));

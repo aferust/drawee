@@ -22,7 +22,7 @@ struct Action(P) {
     bool done = false;
 
     @nogc nothrow void function() runaction;
-    float afterNMS;
+    int afterNMS;
     private int ticks;
 
     @disable this();
@@ -36,7 +36,7 @@ struct Action(P) {
         current = start;
     }
 
-    this(void function() @nogc nothrow runaction, float afterNMS = 0f){ // a function scheduler
+    this(void function() @nogc nothrow runaction, int afterNMS = 0){ // a function scheduler
         this.afterNMS = afterNMS;
         this.runaction = runaction;
     }
@@ -61,7 +61,9 @@ struct Action(P) {
             return;
         }
 
-        if(ticks < 15){
+        enum traceDelayer = 15;
+
+        if(ticks < traceDelayer){
             ticks += dt;
             return;
         }
@@ -90,16 +92,16 @@ auto makeAction(P = Point, Args...)(Args args){
         return Action!P(args);
 }
 
-void proceedActions(int dt) {
-    if(actions.length && actions[actions.length-1].done)
-        actions.free;
+void proceedActions(A)(ref A acts, int dt) {
+    if(acts.length && acts[acts.length-1].done)
+        acts.free;
     else {
-        foreach(i; 0..actions.length){
-            if(!actions[i].done && actions[i].started) {
-                actions[i].update(dt);
-                if(actions[i].runaction is null) hero.pos = actions[i].current;
-                if(actions[i].done && actions.length > i+1)
-                    actions[i+1].started = true;
+        foreach(i; 0..acts.length){
+            if(!acts[i].done && acts[i].started) {
+                acts[i].update(dt);
+                if(acts[i].runaction is null) hero.pos = acts[i].current;
+                if(acts[i].done && acts.length > i+1)
+                    acts[i+1].started = true;
             }
         }
     }

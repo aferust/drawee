@@ -151,3 +151,8 @@ void drawText(string str, int x, int y){
     }
 
 }
+
+void drawMsgNode(){
+    if(msgNode.visible)
+        drawText(msgNode.message, msgNode.pos.x, msgNode.pos.y);
+}

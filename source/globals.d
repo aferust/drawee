@@ -12,6 +12,7 @@ import heroimp;
 import enemyimp;
 import obstacleimp;
 import tween;
+import msgnode;
 
 __gshared {
     SDL_GLContext glcontext;
@@ -111,6 +112,7 @@ __gshared {
     ubyte* keystate;
 
     Clock clock;
+    bool pause;
     
     Hero hero;
     Dvector!Enemy enemies;
@@ -123,12 +125,16 @@ __gshared {
     Dvector!Obstacle obstacles;
 
     Dvector!(Action!Point) actions;
+
+    Dvector!(Action!Point) sceneActions;
     
     cpSpace* space;
 
     float currentArea;
     float rate;
     
+    MsgNode msgNode;
+
     bool won;
 }
 

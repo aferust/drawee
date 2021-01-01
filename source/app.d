@@ -41,8 +41,8 @@ extern (C) int main() {
     textureIdEnemy1 = loadTexture("res/enemy1.png");
     textureIdEnemy2 = loadTexture("res/enemy2.png");
 
-    fontArea = getFontWithSize("res/Fontin-Regular.ttf", 30);
-    charSet = initMemoryFontSet(fontArea, Color.green);
+    charSetScore = initMemoryFontSet(getFontWithSize("res/Fontin-Regular.ttf", 30), Color.green);
+    charSetMsg = initMemoryFontSet(getFontWithSize("res/Fontin-Regular.ttf", 60), Color.red);
 
     import primitives;
     shaderProgramHero = loadShaderHero();
@@ -87,8 +87,8 @@ extern (C) int main() {
     rate = 0.0f;
 
     clock = Clock();
-    
-    sleepMS(500);
+
+    clock.tick();
 
     SDL_Event event;
     while (!quit){
@@ -107,14 +107,7 @@ extern (C) int main() {
                     default:
                         break;
                 }
-            }/* else if(event.type == SDL_KEYUP){
-                switch (event.key.keysym.sym){
-                    case SDLK_SPACE:
-                        break;
-                    default:
-                        break;
-                }
-            }*/
+            }
         }
 
         if(!pause){
@@ -122,13 +115,12 @@ extern (C) int main() {
                 dieIfCollide();
 
             hero.update(clock.dt);
+            
+            cpSpaceStep(space, clock.dt);
 
             foreach (ref enemy; enemies){
                 enemy.update();
             }
-            
-            cpSpaceStep(space, clock.dt);
-
 
             proceedActions(actions, clock.dt);
         }
@@ -167,7 +159,7 @@ void resetGame(){
 
     hero = Hero(Point(SCREEN_WIDTH/2, SCREEN_HEIGHT - FOOTER_HEIGHT));
 
-    msgNode = MsgNode(Point(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), false, "Get ready");
+    msgNode = MsgNode(Point(SCREEN_WIDTH/2 - 120, SCREEN_HEIGHT/3), false, "Get ready");
 
     rail.clear();
     rail.pushBack(Point(0, 0));

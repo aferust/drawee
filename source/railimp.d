@@ -130,12 +130,12 @@ void processRail(){
     currentArea = fabs(polygonArea(rail));
     rate = 100.0f*(1.0f - currentArea / totalArea);
     
-    /*
-    if(1-rate >= 0.8f){
-        enemies.clear();
-        printf("You won!");
+    
+    if(rate >= 80){
+        import msgnode: youWon;
+        youWon();
     }
-    */
+    
 }
 
 void doNewRail(){

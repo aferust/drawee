@@ -59,9 +59,8 @@ __gshared {
     GLuint textureIdEnemy1;
     GLuint textureIdEnemy2;
     GLuint textureFontArea;
-
-    TTF_Font* fontArea;
-    FontSet charSet;
+    
+    FontSet charSetScore, charSetMsg;
 }
 
 alias FontSet = Bcaa!(char, FontInfo);
@@ -147,16 +146,6 @@ enum WALLS_ELASTICITY = 1;
 enum WALLS_FRICTION = 1;
 
 enum ENEMY_RADIUS = 25;
-
-void sleepMS(T)(T dur){
-    version(Windows){
-        import core.sys.windows.windows;
-        Sleep(dur);
-    }else{
-        import core.sys.posix.unistd;
-        sleep(dur/1000);
-    }
-}
 
 struct Clock {
     int last_tick_time = 0;

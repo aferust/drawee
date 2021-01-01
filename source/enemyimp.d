@@ -70,8 +70,9 @@ void killCapturedEnemies(){
         }
         if(!enemies.length && !won){
             won = true;
-            //winLevel();
-            printf("You won!");
+            
+            import msgnode: youWon;
+            youWon();
         } 
     }
 }

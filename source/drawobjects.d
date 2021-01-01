@@ -133,16 +133,16 @@ void drawScore(){
     char[10] buffer;
 
     sprintf(buffer.ptr, "%0.2f %% \0", rate);
-    drawText(assumeUnique(buffer[]), 20, SCREEN_HEIGHT - FOOTER_HEIGHT + 20);
+    drawText(assumeUnique(buffer[]), charSetScore, 20, SCREEN_HEIGHT - FOOTER_HEIGHT + 20);
 }
 
 
-void drawText(string str, int x, int y){
+void drawText(string str, ref FontSet fs, int x, int y){
 
     int accumW;
     foreach (char c; str){
         
-        auto cimg = charSet[c];
+        auto cimg = fs[c];
 
         drText.set(Rect(x + accumW, y, cimg.w, cimg.h), cimg.textureId, 0f);
         drText.draw();
@@ -154,5 +154,5 @@ void drawText(string str, int x, int y){
 
 void drawMsgNode(){
     if(msgNode.visible)
-        drawText(msgNode.message, msgNode.pos.x, msgNode.pos.y);
+        drawText(msgNode.message, charSetMsg, msgNode.pos.x, msgNode.pos.y);
 }

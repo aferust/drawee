@@ -12,7 +12,7 @@ depending on constructor used.
 +/
 
 struct Action(P) {
-    float delayer;
+    
     int steps;
     P start;
     P end;
@@ -22,6 +22,8 @@ struct Action(P) {
     bool done = false;
 
     @nogc nothrow void function() runaction;
+    float afterNMS;
+    private int ticks;
 
     @disable this();
     
@@ -34,7 +36,8 @@ struct Action(P) {
         current = start;
     }
 
-    this(void function() @nogc nothrow runaction){ // a function scheduler
+    this(void function() @nogc nothrow runaction, float afterNMS = 0f){ // a function scheduler
+        this.afterNMS = afterNMS;
         this.runaction = runaction;
     }
 
@@ -42,14 +45,27 @@ struct Action(P) {
         return sqrtf(powf(start.x - end.x, 2) + powf(start.y - end.y, 2));
     }
 
-    void update(){
+    void update(int dt){
         if(!started)
             return;
         if(runaction !is null){
+            if(ticks <= afterNMS){
+                ticks += dt;
+                return;
+            }
+            ticks = 0;
+
             runaction();
+            
             done = true;
             return;
         }
+
+        if(ticks < 15){
+            ticks += dt;
+            return;
+        }
+        ticks = 0;
 
         double step = distance / steps;
 
@@ -74,13 +90,13 @@ auto makeAction(P = Point, Args...)(Args args){
         return Action!P(args);
 }
 
-void proceedActions() {
+void proceedActions(int dt) {
     if(actions.length && actions[actions.length-1].done)
         actions.free;
     else {
         foreach(i; 0..actions.length){
             if(!actions[i].done && actions[i].started) {
-                actions[i].update();
+                actions[i].update(dt);
                 if(actions[i].runaction is null) hero.pos = actions[i].current;
                 if(actions[i].done && actions.length > i+1)
                     actions[i+1].started = true;

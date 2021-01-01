@@ -82,11 +82,10 @@ extern (C) int main() {
 	bool quit;
 
     keystate = SDL_GetKeyboardState(null);
-    
-    float dt = 0;
-    int gTimer;
 
     rate = 0.0f;
+
+    clock = Clock();
     
     sleepMS(500);
 
@@ -114,24 +113,19 @@ extern (C) int main() {
             }*/
         }
 
-        dt = SDL_GetTicks() - gTimer;
+        if(hero.alive == true && hero.heroStat != dead)
+            dieIfCollide();
 
-        if(dt >= FRAME_RATE){ // game logic is limited to fixed FPS
+        hero.update(clock.dt);
+        proceedActions(clock.dt);
 
-            if(hero.alive == true && hero.heroStat != dead)
-                dieIfCollide();
-
-            hero.update(dt);
-            proceedActions();
-
-            foreach (ref enemy; enemies){
-                enemy.update();
-            }
-            if(dt < FPS + 1) // a workaround against a bug at start up
-                cpSpaceStep(space, dt);
-
-            gTimer = SDL_GetTicks();
+        foreach (ref enemy; enemies){
+            enemy.update();
         }
+        
+        if(clock.dt > 0) 
+            cpSpaceStep(space, clock.dt);
+
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         
@@ -145,6 +139,8 @@ extern (C) int main() {
         drawScore();
 
         SDL_GL_SwapWindow(window);
+
+        clock.tick();
     }
 
     clearObstacles();

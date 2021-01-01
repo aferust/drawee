@@ -109,6 +109,8 @@ struct Rect {
 
 __gshared {
     ubyte* keystate;
+
+    Clock clock;
     
     Hero hero;
     Dvector!Enemy enemies;
@@ -147,5 +149,18 @@ void sleepMS(T)(T dur){
     }else{
         import core.sys.posix.unistd;
         sleep(dur/1000);
+    }
+}
+
+struct Clock {
+    int last_tick_time = 0;
+    int dt = 0;
+    
+    @nogc nothrow:
+    
+    void tick(){
+        int tick_time = SDL_GetTicks();
+        dt = tick_time - last_tick_time;
+        last_tick_time = tick_time;
     }
 }

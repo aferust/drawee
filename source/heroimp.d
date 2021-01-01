@@ -37,15 +37,25 @@ struct Hero {
     bool alive = true;
 
     float speed = 0.05f;
+
+    int delayer;
+
     nothrow @nogc:
 
     Circle circle() {
         return Circle(pos, cast(int)HERO_RADIUS);
     }
 
-    void update(float dt){ // delta is not used here for now
-        //printf("%f \n", dt);
-        int s = cast(int)(grid_size * dt * speed);
+    void update(int dt){
+        // printf("%d \n", dt);
+        if(delayer < 15){
+            delayer += dt;
+            return;
+        }
+
+        delayer = 0;
+
+        int s = 5;
         auto cpos = pos;
         auto pos_ = pos;
         

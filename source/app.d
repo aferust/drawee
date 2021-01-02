@@ -155,6 +155,11 @@ extern (C) int main() {
 }
 
 void resetGame(){
+    if(actions.length)
+        actions.clear();
+    if(sceneActions.length)
+        sceneActions.clear();
+
     openCerenomy();
 
     hero = Hero(Point(SCREEN_WIDTH/2, SCREEN_HEIGHT - FOOTER_HEIGHT));

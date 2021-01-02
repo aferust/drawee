@@ -17,22 +17,42 @@ struct MsgNode {
 void openCerenomy(){
 
     enum act1 = () @nogc nothrow {
-        msgNode.message = "Get ready!";
+        msgNode.message = "Get ready! 3";
         msgNode.visible = true;
         pause = true;
     };
 
     enum act2 = () @nogc nothrow {
+        msgNode.message = "Get ready! 2";
+    };
+
+    enum act3 = () @nogc nothrow {
+        msgNode.message = "Get ready! 1";
+    };
+
+    enum act4 = () @nogc nothrow {
+        msgNode.message = "Get ready! 0";
+    };
+
+    enum act5 = () @nogc nothrow {
         msgNode.visible = false;
         pause = false;
     };
 
-    auto first = makeAction(act1, 0);
-    first.started = true;
-    auto last = makeAction(act2, 3000);
+    auto a1 = makeAction(act1, 0);
+    a1.started = true;
 
-    sceneActions ~= first;
-    sceneActions ~= last;
+    auto a2 = makeAction(act2, 1000);
+    auto a3 = makeAction(act3, 1000);
+    auto a4 = makeAction(act4, 1000);
+
+    auto a5 = makeAction(act5, 1000);
+
+    sceneActions ~= a1;
+    sceneActions ~= a2;
+    sceneActions ~= a3;
+    sceneActions ~= a4;
+    sceneActions ~= a5;
 
 }
 

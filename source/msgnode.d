@@ -22,6 +22,7 @@ void openCerenomy(){
         pause = true;
     };
 
+    // todo: use a compile time loop
     enum act2 = () @nogc nothrow {
         msgNode.message = "Get ready! 2";
     };

@@ -118,18 +118,12 @@ void processRail(){
         }
         
     }
-    // printf("len of poly: %d \n", rail.length);
+    
     pVertices.free;
     hero.direction = none;
     
-    /*
-    this.draw_rail();
-    this.updateWalls();
-    */
-    
     currentArea = fabs(polygonArea(rail));
     rate = 100.0f*(1.0f - currentArea / totalArea);
-    
     
     if(rate >= 80){
         import msgnode: youWon;
@@ -142,13 +136,6 @@ void doNewRail(){
     processRail();
     updateTriangles();
     updateWalls();
-    /*
-    var percent = Math.round(100-100*this.currentArea/this.totalArea);
-    if(percent >= 80 && this.won == false){
-        this.won = true;
-        this.winLevel();
-    }
-    */
 }
 
 void updateWalls(){

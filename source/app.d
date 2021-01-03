@@ -160,7 +160,7 @@ void resetGame(){
     if(sceneActions.length)
         sceneActions.clear();
 
-    openCerenomy();
+    openCeremony();
 
     hero = Hero(Point(SCREEN_WIDTH/2, SCREEN_HEIGHT - FOOTER_HEIGHT));
 

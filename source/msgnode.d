@@ -14,8 +14,9 @@ struct MsgNode {
 
 @nogc nothrow:
 
-void openCerenomy(){
-
+void openCeremony(){
+    won = false;
+    
     enum act1 = () @nogc nothrow {
         msgNode.message = "Get ready! 3";
         msgNode.visible = true;

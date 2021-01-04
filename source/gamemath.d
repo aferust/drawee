@@ -23,7 +23,7 @@ auto roundPoint(Point p, int N) pure {
     return p;
 }
 
-import std.algorithm;
+import std.algorithm: min, max;
 bool isPointInSegment(Point r, Point p, Point q) pure {
     return q.x <= max(p.x, r.x) &&
             q.x >= min(p.x, r.x) &&

@@ -10,8 +10,6 @@ Copyright:
    $(HTTP www.boost.org/LICENSE_1_0.txt, Boost License 1.0).
 */
 
-import std.stdint;
-
 import bindbc.sdl;
 
 version(WebAssembly){

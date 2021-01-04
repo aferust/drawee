@@ -1,14 +1,14 @@
 module primitives;
 
-import core.stdc.math: cos, sin;
-import core.stdc.stdlib: malloc, free, exit;
-
 import std.range: chunks;
 
 version(WebAssembly){
     import opengl.gl4;
+    import clib;
 }else{
     import bindbc.opengl;
+    import core.stdc.math: cos, sin;
+    import core.stdc.stdlib: malloc, free, exit;
 }
 
 import dvector;

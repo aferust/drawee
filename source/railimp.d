@@ -10,6 +10,12 @@ import globals;
 import heroimp;
 import enemyimp;
 
+version(WebAssembly){
+    import clib: fabs;
+}else{
+    import std.math;
+}
+
 @nogc nothrow:
 
 void updateTriangles(){
@@ -36,7 +42,6 @@ void updateTriangles(){
 }
 
 void processRail(){
-    import std.math;
     import gamemath;
     
     pVertices.pushBack(roundPoint(hero.pos, grid_size)); // the last point of polygon

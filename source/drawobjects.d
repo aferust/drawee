@@ -132,11 +132,16 @@ void drawObstacles(){
     }
 }
 
-void drawScore(){
+version(WebAssembly){
+    import clib: sprintf;
+}else{
     import core.stdc.stdio: sprintf;
-    import std.exception;
-    char[10] buffer;
+}
 
+import std.exception: assumeUnique;
+
+void drawScore(){
+    char[10] buffer;
     sprintf(buffer.ptr, "%0.2f %% \0", rate);
     drawText(assumeUnique(buffer[]), charSetScore, 20, SCREEN_HEIGHT - FOOTER_HEIGHT + 20);
 }

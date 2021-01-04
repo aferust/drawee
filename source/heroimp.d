@@ -1,12 +1,12 @@
 module heroimp;
 
 version(WebAssembly){
-    import clib: printf;
+    import clib: printf, ceil;
 }else{
     import core.stdc.stdio: printf;
+    import std.math;
 }
 
-import std.math;
 
 import bindbc.sdl;
 

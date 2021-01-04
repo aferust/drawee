@@ -34,15 +34,14 @@
         },
         {
             "name": "wasm",
-            "targetType": "library",
             "targetPath": "web",
             "sourceFiles": [
               "source/**.d"
             ],
             "dependencies": {
-                "bindbc-sdl": {"path": "packs/bindbc-sdl-0.19.2/bindbc-sdl"},
+                "bindbc-sdl": {"path": "packs/bindbc-sdl-0.19.2/bindbc-sdl/"},
                 "chipmunkd": {"path": "packs/chipmunkd/"},
-                "bettercmath": "*"
+                "bettercmath": {"path": "packs/bettercmath/"}
             },
             "dflags-ldc": ["--output-o", "--output-bc", "-c",
                 "-betterC"
@@ -55,7 +54,8 @@
                 "GL_41"
             ],
             "subConfigurations": {
-                "bindbc-sdl": "staticBC"
+                "bindbc-sdl": "staticBC",
+                "bettercmath": "betterC"
             }
         }
     ]

@@ -1,5 +1,5 @@
 module chipmunk.cpSpatialIndex;
-import core.stdc.config;
+alias c_ulong = ulong;
 
 import chipmunk.chipmunk_types;
 import chipmunk.chipmunk_structs;

@@ -49,8 +49,11 @@ version(Windows) {
     DLL's import library and statically linking with SDL.
     */
     private {
-        import core.stdc.stdint : uintptr_t;
-
+        version(WebAssembly){
+            alias uintptr_t = ulong;
+        }else{
+            import core.stdc.stdint : uintptr_t;
+        }
         extern(Windows) alias btex_fptr = uint function(void*);
         extern(C) @nogc nothrow {
             uintptr_t _beginthreadex(void*,uint,btex_fptr,void*,uint,uint*);

@@ -8,9 +8,11 @@ extern(C) @nogc nothrow {
 	void* memmove(void *str1, const void* str2, size_t n);
 	void exit(int return_code);
 	int printf(const char *format, ...);
+    int sprintf(char *str, const char *format, ...);
 
-    alias c_long = long;
+    
 }
+alias c_long = long;
 
 extern (C) @nogc nothrow{
     double sqrt(double x);

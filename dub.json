@@ -20,7 +20,7 @@
                 "chipmunkd": "1.0.1+7.0.1",
                 "bettercmath": "*"
             },
-            "excludedSourceFiles": ["gl4.d", "clib.d", "earcut.d", "dvector.d"],
+            "excludedSourceFiles": ["gl4.d", "clib.d", "earcut.d", "dvector.d", "bcaa.d"],
             "versions": [
                 "BindSDL_TTF",
                 "BindSDL_Image",
@@ -41,7 +41,6 @@
             ],
             "dependencies": {
                 "bindbc-sdl": {"path": "packs/bindbc-sdl-0.19.2/bindbc-sdl"},
-                "bcaa": "*",
                 "chipmunkd": {"path": "packs/chipmunkd/"},
                 "bettercmath": "*"
             },

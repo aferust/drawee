@@ -58,6 +58,12 @@ extern (C) int main() {
         if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTS) != 0) {
             logError();
         }
+
+        SDL_Renderer* renderer;
+    
+        SDL_CreateWindowAndRenderer(SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL, &window, &renderer);
+
+        gl_context = SDL_GL_CreateContext(window);
     }else{
         initSDL();
         initSDLTTF();

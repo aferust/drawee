@@ -1,6 +1,5 @@
 module tween;
 
-
 version(WebAssembly){
     import clib;
 }else{

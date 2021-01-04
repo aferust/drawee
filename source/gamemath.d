@@ -1,12 +1,12 @@
 module gamemath;
 
-
 version(WebAssembly){
     import clib;
 }else{
     import core.stdc.math: powf, sqrtf, fabs;
+    import std.math;
 }
-import std.math;
+
 import std.range;
 import std.typecons;
 

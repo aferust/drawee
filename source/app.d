@@ -118,11 +118,11 @@ extern (C) int main() {
 
     clock.tick();
 
-    while(!quit)
-        mainLoop(window);
-
     version(WebAssembly){
         emscripten_set_main_loop_arg(&mainLoop, cast(void*)window, 0, 1);
+    }else{
+        while(!quit)
+            mainLoop(window);
     }
 
     clearObstacles();

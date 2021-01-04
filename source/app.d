@@ -150,7 +150,7 @@ void mainLoop(void* _win){
         if(event.type == SDL_KEYDOWN){
             switch (event.key.keysym.sym){
                 case SDLK_ESCAPE:
-                    quit = true;
+                    cancelMainLoop();
                     break;
                 case SDLK_r:
                     resetGame();

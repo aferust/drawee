@@ -1,7 +1,9 @@
 module boilerplate;
-
-import core.stdc.stdio;
-
+version(WebAssembly){
+    import clib;
+}else{
+    import core.stdc.stdio;
+}
 import bindbc.sdl;
 import bindbc.sdl.ttf;
 import bindbc.sdl.image;

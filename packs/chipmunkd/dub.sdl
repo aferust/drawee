@@ -1,0 +1,7 @@
+name "chipmunkd"
+description "D bindings to chipmunk2d, a 2D physics engine."
+copyright "Copyright © 2016, rcorre"
+authors "rcorre"
+homepage "https://github.com/rcorre/chipmunkd"
+license "MIT"
+dflags "-betterC"

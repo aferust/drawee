@@ -1,6 +1,10 @@
 module heroimp;
 
-import core.stdc.stdio;
+version(WebAssembly){
+    import clib: printf;
+}else{
+    import core.stdc.stdio: printf;
+}
 
 import std.math;
 

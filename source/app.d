@@ -16,8 +16,10 @@ import bindbc.sdl;
 
 version(WebAssembly){
     import opengl.gl4;
+    import clib;
 }else{
     import bindbc.opengl;
+    import core.stdc.stdio: printf;
 }
 
 import dvector;

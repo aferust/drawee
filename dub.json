@@ -12,7 +12,7 @@
             "targetType": "executable",
             "dflags": ["-betterC"],
             "dependencies": {
-                "bindbc-opengl": "~>0.10.0",
+                "bindbc-opengl": "*",
                 "bindbc-sdl": "~>0.13.0",
                 "dvector": "~>0.0.5",
                 "bcaa": "*",
@@ -20,7 +20,7 @@
                 "chipmunkd": "1.0.1+7.0.1",
                 "bettercmath": "*"
             },
-            "excludedSourceFiles": ["gl4.d", "clib.d"],
+            "excludedSourceFiles": ["gl4.d", "clib.d", "earcut.d", "dvector.d"],
             "versions": [
                 "BindSDL_TTF",
                 "BindSDL_Image",
@@ -40,11 +40,9 @@
               "source/**.d"
             ],
             "dependencies": {
-                "bindbc-sdl": "~>0.13.0",
-                "dvector": "~>0.0.5",
+                "bindbc-sdl": {"path": "packs/bindbc-sdl-0.19.2/bindbc-sdl"},
                 "bcaa": "*",
-                "earcutd": "*",
-                "chipmunkd": "1.0.1+7.0.1",
+                "chipmunkd": {"path": "packs/chipmunkd/"},
                 "bettercmath": "*"
             },
             "dflags-ldc": ["--output-o", "--output-bc", "-c",

@@ -1,0 +1,60 @@
+{
+	"authors": [
+		"Mike Parker"
+	],
+	"configurations": [
+		{
+			"dependencies": {
+				"bindbc-loader": "~>0.3.0"
+			},
+			"name": "dynamic",
+			"targetType": "staticLibrary"
+		},
+		{
+			"dependencies": {
+				"bindbc-loader": "~>0.3.0"
+			},
+			"dflags": [
+				"-betterC"
+			],
+			"name": "dynamicBC",
+			"subConfigurations": {
+				"bindbc-loader": "yesBC"
+			},
+			"targetType": "staticLibrary"
+		},
+		{
+			"name": "static",
+			"targetType": "staticLibrary",
+			"versions": [
+				"BindSDL_Static"
+			]
+		},
+		{
+			"dflags": [
+				"-betterC"
+			],
+			"excludedSourceFiles": [
+				"source/bindbc/sdl/dynload.d"
+			],
+			"name": "staticBC",
+			"targetType": "staticLibrary",
+			"versions": [
+				"BindSDL_Static"
+			]
+		}
+	],
+	"description": "Dynamic and static bindings to SDL2 and its satellite libraries, compatible with -betterC, @nogc, and nothrow.",
+	"importPaths": [
+		"source/"
+	],
+	"license": "Boost",
+	"name": "bindbc-sdl",
+	"sourcePaths": [
+		"source/"
+	],
+	"targetName": "BindBC_SDL",
+	"targetPath": "lib",
+	"targetType": "staticLibrary",
+	"version": "0.19.2"
+}

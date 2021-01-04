@@ -11,3 +11,21 @@ extern(C) @nogc nothrow {
 
     alias c_long = long;
 }
+
+extern (C) @nogc nothrow{
+    double sqrt(double x);
+    float sqrtf(float x);
+    float fabs(float x);
+    double sin(double x);
+    double cos(double x);
+    double acos(double x);
+    double atan2(double y, double x);
+    double fmod(double x, double y);
+    double exp(double x);
+    double pow(double x, double y);
+    float powf( float base, float exponent );
+    double floor(double x);
+    double ceil(double x);
+    double round (double a);
+    float roundf (float a);
+}

@@ -3,27 +3,63 @@
         "user"
     ],
     "copyright": "Copyright © 2020, user",
-    "dependencies": {
-        "bindbc-opengl": "~>0.10.0",
-        "bindbc-sdl": "~>0.13.0",
-        "dvector": "~>0.0.5",
-        "bcaa": "*",
-        "earcutd": "*",
-        "chipmunkd": "1.0.1+7.0.1",
-        "bettercmath": "*"
-    },
     "description": "A volfied-like game WIP.",
     "license": "boost",
     "name": "drawee",
-    "versions": [
-        "BindSDL_TTF",
-        "BindSDL_Image",
-        "GL_41"
-    ],
-    "dflags": ["-betterC"],
-    "subConfigurations": {
-        "bindbc-sdl": "staticBC",
-        "bindbc-opengl": "dynamicBC"
-    },
-    "libs": ["SDL2", "SDL2_image", "SDL2_ttf", "chipmunk"]
+    "configurations": [
+        {
+            "name": "win32",
+            "targetType": "executable",
+            "dflags": ["-betterC"],
+            "dependencies": {
+                "bindbc-opengl": "~>0.10.0",
+                "bindbc-sdl": "~>0.13.0",
+                "dvector": "~>0.0.5",
+                "bcaa": "*",
+                "earcutd": "*",
+                "chipmunkd": "1.0.1+7.0.1",
+                "bettercmath": "*"
+            },
+            "excludedSourceFiles": ["gl4.d", "clib.d"],
+            "versions": [
+                "BindSDL_TTF",
+                "BindSDL_Image",
+                "GL_41"
+            ],
+            "subConfigurations": {
+                "bindbc-sdl": "staticBC",
+                "bindbc-opengl": "dynamicBC"
+            },
+            "libs": ["SDL2", "SDL2_image", "SDL2_ttf", "chipmunk"]
+        },
+        {
+            "name": "wasm",
+            "targetType": "library",
+            "targetPath": "web",
+            "sourceFiles": [
+              "source/**.d"
+            ],
+            "dependencies": {
+                "bindbc-sdl": "~>0.13.0",
+                "dvector": "~>0.0.5",
+                "bcaa": "*",
+                "earcutd": "*",
+                "chipmunkd": "1.0.1+7.0.1",
+                "bettercmath": "*"
+            },
+            "dflags-ldc": ["--output-o", "--output-bc", "-c",
+                "-betterC"
+            ],
+            "lflags": ["-allow-undefined"],
+            "versions": [
+                "BindSDL_Static",
+                "BindSDL_TTF",
+                "BindSDL_Image",
+                "GL_41"
+            ],
+            "subConfigurations": {
+                "bindbc-sdl": "staticBC"
+            }
+        }
+    ]
 }

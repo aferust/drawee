@@ -3,7 +3,11 @@ module globals;
 import std.typecons;
 
 import bindbc.sdl;
-import bindbc.opengl;
+version(WebAssembly){
+    import opengl.gl4;
+}else{
+    import bindbc.opengl;
+}
 import dvector;
 import bcaa;
 import chipmunk;
@@ -108,6 +112,8 @@ struct Rect {
 }
 
 __gshared {
+    bool quit;
+    
     ubyte* keystate;
 
     Clock clock;

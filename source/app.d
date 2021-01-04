@@ -13,7 +13,13 @@ Copyright:
 import std.stdint;
 
 import bindbc.sdl;
-import bindbc.opengl;
+
+version(WebAssembly){
+    import opengl.gl4;
+}else{
+    import bindbc.opengl;
+}
+
 import dvector;
 import chipmunk;
 
@@ -27,13 +33,35 @@ import enemyimp;
 import obstacleimp;
 import msgnode;
 
+version(WebAssembly){
+    alias em_arg_callback_func = extern(C) void function(void*) @nogc nothrow;
+    alias em_callback_func = extern(C) void function() @nogc nothrow;
+    extern(C) void emscripten_set_main_loop_arg(em_arg_callback_func func, void *arg, int fps, int simulate_infinite_loop) @nogc nothrow;
+    extern(C) void emscripten_set_main_loop(em_callback_func func, int fps, int simulate_infinite_loop) @nogc nothrow;
+    extern(C) void emscripten_cancel_main_loop() @nogc nothrow;
+}
+
 @nogc nothrow:
 
+void logError(size_t line = __LINE__)(){
+   printf("%d:%s\n", line, SDL_GetError());
+}
+
 extern (C) int main() {
-    initSDL();
-    initSDLTTF();
-    initSDLImage();
-    initGL();
+
+    version(WebAssembly){
+        SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 4 );
+        SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 0 );
+        SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
+        if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTS) != 0) {
+            logError();
+        }
+    }else{
+        initSDL();
+        initSDLTTF();
+        initSDLImage();
+        initGL();        
+    }
 
     textureIdObstacle = loadTexture("res/misslescararmblue.png");
     textureIdBg1 = loadTexture("res/bg1.png");
@@ -80,8 +108,6 @@ extern (C) int main() {
 
     drTRect = GLTexturedRect(shaderProgramEn);
 
-	bool quit;
-
     keystate = SDL_GetKeyboardState(null);
 
     rate = 0.0f;
@@ -90,58 +116,11 @@ extern (C) int main() {
 
     clock.tick();
 
-    SDL_Event event;
-    while (!quit){
-        while( SDL_PollEvent( &event ) != 0 ){
-            if(event.type == SDL_KEYDOWN){
-                switch (event.key.keysym.sym){
-                    case SDLK_ESCAPE:
-                        quit = true;
-                        break;
-                    case SDLK_r:
-                        resetGame();
-                        break;
-                    case SDLK_p:
-                        pause = !pause;
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
+    while(!quit)
+        mainLoop(window);
 
-        if(!pause){
-            if(hero.alive == true && hero.heroStat != dead)
-                dieIfCollide();
-
-            hero.update(clock.dt);
-            
-            cpSpaceStep(space, clock.dt);
-
-            foreach (ref enemy; enemies){
-                enemy.update();
-            }
-
-            proceedActions(actions, clock.dt);
-        }
-
-        proceedActions(sceneActions, clock.dt);
-
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        
-        drawBg();
-        drawRail();
-        drawForwardTrace();
-        drawBackwardTrace();
-        drawEnemies();
-        drawHero();
-        drawObstacles();
-        drawScore();
-        drawMsgNode();
-
-        SDL_GL_SwapWindow(window);
-
-        clock.tick();
+    version(WebAssembly){
+        emscripten_set_main_loop_arg(&mainLoop, cast(void*)window, 0, 1);
     }
 
     clearObstacles();
@@ -152,6 +131,72 @@ extern (C) int main() {
     SDL_Quit();
 
     return 0;
+}
+
+void mainLoop(void* _win){
+    auto win = cast(SDL_Window*)_win;
+
+    SDL_Event event;
+
+    while( SDL_PollEvent( &event ) != 0 ){
+        if(event.type == SDL_KEYDOWN){
+            switch (event.key.keysym.sym){
+                case SDLK_ESCAPE:
+                    quit = true;
+                    break;
+                case SDLK_r:
+                    resetGame();
+                    break;
+                case SDLK_p:
+                    pause = !pause;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    if(!pause){
+        if(hero.alive == true && hero.heroStat != dead)
+            dieIfCollide();
+
+        hero.update(clock.dt);
+        
+        cpSpaceStep(space, clock.dt);
+
+        foreach (ref enemy; enemies){
+            enemy.update();
+        }
+
+        proceedActions(actions, clock.dt);
+    }
+
+    proceedActions(sceneActions, clock.dt);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    
+    drawBg();
+    drawRail();
+    drawForwardTrace();
+    drawBackwardTrace();
+    drawEnemies();
+    drawHero();
+    drawObstacles();
+    drawScore();
+    drawMsgNode();
+
+    SDL_GL_SwapWindow(window);
+
+    clock.tick();
+}
+
+void cancelMainLoop(){
+
+    version(WebAssembly){
+        emscripten_cancel_main_loop();
+    }else{
+        quit = true;
+    }
 }
 
 void resetGame(){

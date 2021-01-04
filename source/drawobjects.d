@@ -90,7 +90,11 @@ void drawBackwardTrace() {
 
 void drawRail(){
 
-    import bindbc.opengl;
+    version(WebAssembly){
+        import opengl.gl4;
+    }else{
+        import bindbc.opengl;
+    }
     
     if (won)
         return;

@@ -5,7 +5,12 @@ import core.stdc.stdlib: malloc, free, exit;
 
 import std.range: chunks;
 
-import bindbc.opengl;
+version(WebAssembly){
+    import opengl.gl4;
+}else{
+    import bindbc.opengl;
+}
+
 import dvector;
 import bettercmath;
 

@@ -8,7 +8,7 @@
     "name": "drawee",
     "configurations": [
         {
-            "name": "win32",
+            "name": "default",
             "targetType": "executable",
             "dflags": ["-betterC"],
             "dependencies": {

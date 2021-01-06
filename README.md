@@ -10,4 +10,7 @@
 - Use arrow keys to move the hero
 - Start shrinking the polygon using SPACE + arrow keys
 
+## WASM build with emscripten
+- dub build --config=wasm --compiler=ldc2 --build=release --build-mode=allAtOnce --combined --arch=wasm32-unknown-unknown-wasm -v
+
 ![](demo.gif)

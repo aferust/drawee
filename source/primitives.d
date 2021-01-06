@@ -465,7 +465,7 @@ struct GLText {
         glBufferData(GL_ARRAY_BUFFER, vertices.length * float.sizeof, vertices.ptr, GL_STATIC_DRAW);
         
         glBindVertexArray(vao);
-
+        
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * float.sizeof, cast(void*)0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -653,111 +653,133 @@ GLuint initShader(const char* vShader, const char* fShader, const char* outputAt
     return program;
 }
 
+version(WebAssembly){
+    enum verth = "#version 300 es\n
+    ";
+    enum fragh = "#version 300 es\n
+        precision mediump float;\n
+    ";
+}else{
+    enum verth = "#version 410 core\n
+    ";
+    enum fragh = "#version 410 core\n";
+}
+
 GLuint loadShaderHero(){
-    const char*  vert = q{
-        attribute vec4 position;
+    enum vert = verth ~ q{
+        layout (location = 0) in vec4 position;
         uniform mat4 projectionMat;
         void main() {
             gl_Position = projectionMat * vec4(position.xyz, 1.0);
         }
     };
-    const char*  frag = q{
-        
+    enum frag = fragh ~ `
         uniform vec4 ucolor;
+
+        out vec4 FragColor;
+
         void main() {
-            gl_FragColor = ucolor;
+            FragColor = ucolor;
         }
-    };
+    `;
 
     return initShader(vert,  frag, "ucolor");
     
 }
 
 GLuint loadShaderEnemy(){
-    const char*  vert = q{
-        attribute vec4 position;
+    enum vert = verth ~ `
+        layout (location = 0) in vec4 position;
         uniform mat4 projectionMat;
         void main() {
             gl_Position = projectionMat * vec4(position.xyz, 1.0);
         }
-    };
-    const char*  frag = q{
-        
+    `;
+    enum frag = fragh ~ `
         uniform vec4 ucolor;
+
+        out vec4 FragColor;
+
         void main() {
-            gl_FragColor = ucolor;
+            FragColor = ucolor;
         }
-    };
+    `;
 
     return initShader(vert,  frag, "fragColor");
 }
 
 GLuint loadShaderPoly(){
-    const char*  vert = q{
-        attribute vec4 position;
+    enum vert = verth ~ q{
+        layout (location = 0) in vec4 position;
         uniform mat4 projectionMat;
         void main() {
             gl_Position = projectionMat * vec4(position.xyz, 1.0);
         }
     };
-    const char*  frag = q{
-        
+    enum frag = fragh ~ `
         uniform vec4 ucolor;
+
+        out vec4 FragColor;
+
         void main() {
-            gl_FragColor = ucolor;
+            FragColor = ucolor;
         }
-    };
+    `;
 
     return initShader(vert,  frag, "fragColor");
 }
 
 GLuint loadShaderGreen(){
-    const char*  vert = q{
-        attribute vec4 position;
+    enum vert = verth ~ q{
+        layout (location = 0) in vec4 position;
         uniform mat4 projectionMat;
         void main() {
             gl_Position = projectionMat * vec4(position.xyz, 1.0);
         }
     };
-    const char*  frag = q{
-        
+    enum frag = fragh ~ `
         uniform vec4 ucolor;
+
+        out vec4 FragColor;
+
         void main() {
-            gl_FragColor = ucolor;
+            FragColor = ucolor;
         }
-    };
+    `;
 
     return initShader(vert,  frag, "fragColor");
 }
 
 GLuint loadShaderRed(){
-    const char*  vert = q{
-        attribute vec4 position;
+    enum vert = verth ~ q{
+        layout (location = 0) in vec4 position;
         uniform mat4 projectionMat;
         void main() {
             gl_Position = projectionMat * vec4(position.xyz, 1.0);
         }
     };
-    const char*  frag = q{
-        
+    enum frag = fragh ~ `
         uniform vec4 ucolor;
+
+        out vec4 FragColor;
+
         void main() {
-            gl_FragColor = ucolor;
+            FragColor = ucolor;
         }
-    };
+    `;
 
     return initShader(vert,  frag, "fragColor");
 }
 
 GLuint loadShaderFG(){
-    const char*  vert = q{
-        #version 330 core
+    enum vert = verth ~ q{
         layout (location = 0) in vec4 aPos;
         layout (location = 1) in vec2 aTexCoord;
-        uniform mat4 projectionMat;
-        uniform mat4 modelMat;
 
         out vec2 TexCoord;
+        
+        uniform mat4 projectionMat;
+        uniform mat4 modelMat;
 
         void main()
         {
@@ -765,26 +787,23 @@ GLuint loadShaderFG(){
             TexCoord = aTexCoord;
         }
     };
-    const char*  frag = q{
-        #version 330 core
-        out vec4 FragColor;
-
+    enum frag = fragh ~ `
         in vec2 TexCoord;
+        out vec4 FragColor;
 
         uniform sampler2D userTexture;
 
         void main()
         {   
-            FragColor = texture(userTexture, TexCoord);
+            FragColor = texture(userTexture, TexCoord.xy);
         }
-    };
+    `;
 
     return initShader(vert, frag, "fragColor");
 }
 
 GLuint loadShaderEn(){
-    const char*  vert = q{
-        #version 330 core
+    enum vert = verth ~ q{
         layout (location = 0) in vec4 vertex;
         out vec2 TexCoords;
 
@@ -797,29 +816,26 @@ GLuint loadShaderEn(){
             gl_Position = projectionMat * modelMat * vec4(vertex.xy, 0.0, 1.0);
         }
     };
-    const char*  frag = q{
-        #version 330 core
-        out vec4 FragColor;
-
+    enum frag = fragh ~ `
         in vec2 TexCoords;
+        out vec4 FragColor;
 
         uniform sampler2D userTexture;
 
         void main()
         {   
-            FragColor = texture(userTexture, TexCoords);
+            FragColor = texture(userTexture, TexCoords.xy);
         }
-    };
+    `;
 
     return initShader(vert, frag, "fragColor");
 }
 
 GLuint loadShaderText(){
-    const char*  vert = q{
-        #version 330 core
+    enum vert = verth ~ q{
         layout (location = 0) in vec4 vertex;
         out vec2 TexCoords;
-
+        
         uniform mat4 projectionMat;
         uniform mat4 modelMat;
 
@@ -829,19 +845,17 @@ GLuint loadShaderText(){
             gl_Position = projectionMat * modelMat * vec4(vertex.xy, 0.0, 1.0);
         }
     };
-    const char*  frag = q{
-        #version 330 core
-        out vec4 FragColor;
-
+    enum frag = fragh ~ `
         in vec2 TexCoords;
+        out vec4 FragColor;
 
         uniform sampler2D userTexture;
 
         void main()
         {   
-            FragColor = texture(userTexture, TexCoords);
+            FragColor = texture(userTexture, TexCoords.xy);
         }
-    };
+    `;
 
     return initShader(vert, frag, "fragColor");
 }

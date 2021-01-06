@@ -51,12 +51,11 @@ struct Hero {
     void update(int dt){
 
         version(WebAssembly){
-            enum accumDt = 5;
+            enum accumDt = 1;
         }else{
-            enum accumDt = 15;
+            enum accumDt = 25;
         }
 
-        // printf("%d \n", dt);
         if(delayer < accumDt){
             delayer += dt;
             return;

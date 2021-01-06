@@ -20,7 +20,7 @@
                 "chipmunkd": "1.0.1+7.0.1",
                 "bettercmath": "*"
             },
-            "excludedSourceFiles": ["gl4.d", "clib.d"],
+            "excludedSourceFiles": ["gl4.d"],
             "versions": [
                 "BindSDL_TTF",
                 "BindSDL_Image",

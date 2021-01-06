@@ -62,6 +62,10 @@ extern (C) int main() {
             logError();
         }
 
+        SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 1 );
+
+        TTF_Init();
+        
         SDL_Renderer* renderer;
     
         SDL_CreateWindowAndRenderer(SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL, &window, &renderer);

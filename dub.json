@@ -6,6 +6,7 @@
     "description": "A volfied-like game WIP.",
     "license": "boost",
     "name": "drawee",
+    "version": "0.0.1",
     "configurations": [
         {
             "name": "default",

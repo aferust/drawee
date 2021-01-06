@@ -41,9 +41,9 @@
                 "earcutd": "*",
                 "dvector": "~>0.0.5",
                 "bcaa": "*",
-                "bindbc-sdl": {"path": "packs/bindbc-sdl-0.19.2/bindbc-sdl/"},
-                "chipmunkd": {"path": "packs/chipmunkd/"},
-                "bettercmath": {"path": "packs/bettercmath/"}
+                "bindbc-sdl": "~>0.13.0",
+                "chipmunkd": "1.0.1+7.0.1",
+                "bettercmath": "*"
             },
             "dflags-ldc": ["--output-o", "--output-bc", "-c",
                 "-betterC"

@@ -1,10 +1,6 @@
 module tween;
 
-version(WebAssembly){
-    import clib;
-}else{
-    import core.stdc.math;
-}
+import core.stdc.math;
 
 import std.traits;
 

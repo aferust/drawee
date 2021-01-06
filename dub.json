@@ -20,7 +20,7 @@
                 "chipmunkd": "1.0.1+7.0.1",
                 "bettercmath": "*"
             },
-            "excludedSourceFiles": ["gl4.d", "clib.d", "earcut.d", "dvector.d", "bcaa.d"],
+            "excludedSourceFiles": ["gl4.d", "clib.d"],
             "versions": [
                 "BindSDL_TTF",
                 "BindSDL_Image",
@@ -34,11 +34,13 @@
         },
         {
             "name": "wasm",
-            "targetPath": "web",
             "sourceFiles": [
               "source/**.d"
             ],
             "dependencies": {
+                "earcutd": "*",
+                "dvector": "~>0.0.5",
+                "bcaa": "*",
                 "bindbc-sdl": {"path": "packs/bindbc-sdl-0.19.2/bindbc-sdl/"},
                 "chipmunkd": {"path": "packs/chipmunkd/"},
                 "bettercmath": {"path": "packs/bettercmath/"}
@@ -56,7 +58,8 @@
             "subConfigurations": {
                 "bindbc-sdl": "staticBC",
                 "bettercmath": "betterC"
-            }
+            },
+            "uUcommentMe-postBuildCommands": ["emcc -v -O0 -s WASM=1 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS=[\"png\"] -s USE_SDL_TTF=2 -s ENVIRONMENT=web --embed-file res -o web/index.html libdrawee.a libchipmunk.a"]
         }
     ]
 }

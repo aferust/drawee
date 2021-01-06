@@ -1,0 +1,24 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/phobos
+    docker:
+      - image: circleci/buildpack-deps:18.04
+    parallelism: 1
+    steps:
+      - checkout
+      - run:
+          command: ./.circleci/run.sh install-deps
+          name: Install DMD
+      - run:
+          command: ./.circleci/run.sh setup-repos
+          name: Clone DMD & DRuntime
+      - run:
+          command: ./.circleci/run.sh publictests
+          name: Run all public unittests
+      - run:
+          command: ./.circleci/run.sh coverage
+          name: Run Phobos testsuite with -cov
+      - run:
+          command: bash <(curl -s https://codecov.io/bash)
+          name: Upload coverage files to CodeCov

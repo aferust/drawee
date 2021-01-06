@@ -132,11 +132,9 @@ void drawObstacles(){
     }
 }
 
-version(WebAssembly){
-    import clib: sprintf;
-}else{
-    import core.stdc.stdio: sprintf;
-}
+
+import core.stdc.stdio: sprintf;
+
 
 import std.exception: assumeUnique;
 

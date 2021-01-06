@@ -1,10 +1,6 @@
 module enemyimp;
 
-version(WebAssembly){
-    import clib: printf;
-}else{
-    import core.stdc.stdio: printf;
-}
+import core.stdc.stdio: printf;
 
 import chipmunk;
 

@@ -14,7 +14,7 @@ import bindbc.sdl;
 
 version(WebAssembly){
     import opengl.gl4;
-    import clib;
+    import core.stdc.stdio: printf;
 }else{
     import bindbc.opengl;
     import core.stdc.stdio: printf;
@@ -39,6 +39,11 @@ version(WebAssembly){
     extern(C) void emscripten_set_main_loop_arg(em_arg_callback_func func, void *arg, int fps, int simulate_infinite_loop) @nogc nothrow;
     extern(C) void emscripten_set_main_loop(em_callback_func func, int fps, int simulate_infinite_loop) @nogc nothrow;
     extern(C) void emscripten_cancel_main_loop() @nogc nothrow;
+
+    extern(C):
+    nothrow @nogc @trusted void __assert(const(char)* exp, const(char)* file, uint line){
+
+    }
 }
 
 @nogc nothrow:
@@ -61,7 +66,7 @@ extern (C) int main() {
     
         SDL_CreateWindowAndRenderer(SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL, &window, &renderer);
 
-        gl_context = SDL_GL_CreateContext(window);
+        glcontext = SDL_GL_CreateContext(window);
     }else{
         initSDL();
         initSDLTTF();
@@ -139,7 +144,7 @@ extern (C) int main() {
     return 0;
 }
 
-void mainLoop(void* _win){
+extern(C) void mainLoop(void* _win) @nogc nothrow {
     auto win = cast(SDL_Window*)_win;
 
     SDL_Event event;

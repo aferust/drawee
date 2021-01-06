@@ -10,11 +10,7 @@ import globals;
 import heroimp;
 import enemyimp;
 
-version(WebAssembly){
-    import clib: fabs;
-}else{
-    import std.math;
-}
+import std.math;
 
 @nogc nothrow:
 

@@ -1,10 +1,7 @@
 module heroimp;
 
-
 import core.stdc.stdio: printf;
 import std.math;
-
-
 
 import bindbc.sdl;
 
@@ -53,7 +50,7 @@ struct Hero {
         version(WebAssembly){
             enum accumDt = 1;
         }else{
-            enum accumDt = 25;
+            enum accumDt = 15;
         }
 
         if(delayer < accumDt){
@@ -224,8 +221,6 @@ void moveOnTraceBack(){
 }
 
 void fix() {
-    
-    //this.d_node_bt.clear();
     hero.direction = none;// cook onemli
     hero.heroStat = movingOntheRail;
     if(hero.pos != pVertices[0])

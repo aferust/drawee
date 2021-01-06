@@ -33,44 +33,12 @@ import enemyimp;
 import obstacleimp;
 import msgnode;
 
-version(WebAssembly){
-    alias em_arg_callback_func = extern(C) void function(void*) @nogc nothrow;
-    alias em_callback_func = extern(C) void function() @nogc nothrow;
-    extern(C) void emscripten_set_main_loop_arg(em_arg_callback_func func, void *arg, int fps, int simulate_infinite_loop) @nogc nothrow;
-    extern(C) void emscripten_set_main_loop(em_callback_func func, int fps, int simulate_infinite_loop) @nogc nothrow;
-    extern(C) void emscripten_cancel_main_loop() @nogc nothrow;
-
-    extern(C):
-    nothrow @nogc @trusted void __assert(const(char)* exp, const(char)* file, uint line){
-
-    }
-}
-
 @nogc nothrow:
-
-void logError(size_t line = __LINE__)(){
-   printf("%d:%s\n", line, SDL_GetError());
-}
 
 extern (C) int main() {
 
     version(WebAssembly){
-        SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
-        SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 0 );
-        SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
-        if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTS) != 0) {
-            logError();
-        }
-
-        SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 1 );
-
-        TTF_Init();
-        
-        SDL_Renderer* renderer;
-    
-        SDL_CreateWindowAndRenderer(SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL, &window, &renderer);
-
-        glcontext = SDL_GL_CreateContext(window);
+        initSDLandFriends();
     }else{
         initSDL();
         initSDLTTF();
@@ -208,7 +176,7 @@ extern(C) void mainLoop(void* _win) @nogc nothrow {
 void cancelMainLoop(){
 
     version(WebAssembly){
-        emscripten_cancel_main_loop();
+        emscripten_cancel_main_loop(); // not a good idea for web
     }else{
         quit = true;
     }
@@ -237,7 +205,6 @@ void resetGame(){
     updateTriangles();
     updateWalls();
 
-    
     enemies.clear();
     enemies ~= Enemy(ENEMY_RADIUS, Point(152, 190), cpVect(0.2, 0.4), 0.005f, textureIdEnemy1);
     enemies ~= Enemy(ENEMY_RADIUS, Point(202, 150), cpVect(0.4, 0.2), -0.005f, textureIdEnemy2);

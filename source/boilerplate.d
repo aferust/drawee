@@ -14,6 +14,45 @@ version(WebAssembly){
 
 import globals;
 
+version(WebAssembly){
+    alias em_arg_callback_func = extern(C) void function(void*) @nogc nothrow;
+    alias em_callback_func = extern(C) void function() @nogc nothrow;
+    extern(C) void emscripten_set_main_loop_arg(em_arg_callback_func func, void *arg, int fps, int simulate_infinite_loop) @nogc nothrow;
+    extern(C) void emscripten_set_main_loop(em_callback_func func, int fps, int simulate_infinite_loop) @nogc nothrow;
+    extern(C) void emscripten_cancel_main_loop() @nogc nothrow;
+
+    extern(C) @nogc nothrow:
+
+    nothrow @nogc @trusted void __assert(const(char)* exp, const(char)* file, uint line){
+        // I am not linking neither druntime nor phobos
+        // this is for a linker error
+    }
+
+    void logError(size_t line = __LINE__)(){
+        printf("%d:%s\n", line, SDL_GetError());
+    }
+
+    void initSDLandFriends(){
+        SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
+        SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 0 );
+        SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
+        if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTS) != 0) {
+            logError();
+        }
+
+        SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 1 );
+
+        TTF_Init();
+
+        SDL_Renderer* renderer;
+
+        SDL_CreateWindowAndRenderer(SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL, &window, &renderer);
+
+        glcontext = SDL_GL_CreateContext(window);
+    }
+    
+}
+
 @nogc nothrow:
 
 int initSDLImage(){
@@ -122,9 +161,7 @@ int initSDL(){
 }
 
 int initSDLTTF(){
-    version(BindSDL_Static){
-    	 // todo: some stuff
-    }else{
+    version(BindSDL_Static){}else{
     	if(loadSDLTTF() != sdlTTFSupport) {
             printf("SDL_TTF error!".ptr);
             return 1;

@@ -59,7 +59,7 @@
                 "bindbc-sdl": "staticBC",
                 "bettercmath": "betterC"
             },
-            "uUcommentMe-postBuildCommands": ["emcc -v -O0 -s WASM=1 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS=[\"png\"] -s USE_SDL_TTF=2 -s ENVIRONMENT=web --embed-file res -o web/index.html libdrawee.a libchipmunk.a -s FULL_ES3=1 -s MIN_WEBGL_VERSION=2 -s INITIAL_MEMORY=33554432"]
+            "postBuildCommands": ["emcc -v -O0 -s WASM=1 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS=[\"png\"] -s USE_SDL_TTF=2 -s ENVIRONMENT=web --embed-file res -o docs/index.html libdrawee.a libchipmunk.a -s FULL_ES3=1 -s MIN_WEBGL_VERSION=2 -s INITIAL_MEMORY=33554432"]
         }
     ]
 }

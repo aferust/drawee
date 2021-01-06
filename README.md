@@ -11,7 +11,7 @@
 - Start shrinking the polygon using SPACE + arrow keys
 - use key P for pause and R for restart
 
-- the game is playeble [here](https://aferust.github.io/drawee/)
+- the game is playable [here](https://aferust.github.io/drawee/)
 
 ## WASM build with emscripten
 - dub build --config=wasm --compiler=ldc2 --build=release --build-mode=allAtOnce --combined --arch=wasm32-unknown-unknown-wasm -v

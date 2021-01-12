@@ -167,6 +167,7 @@ extern(C) void mainLoop(void* _win) @nogc nothrow {
     drawObstacles();
     drawScore();
     drawMsgNode();
+    drawTestUTF8();
 
     SDL_GL_SwapWindow(window);
 

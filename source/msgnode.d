@@ -18,22 +18,22 @@ void openCeremony(){
     won = false;
     
     enum act1 = () @nogc nothrow {
-        msgNode.message = "Get ready! 3 ğüşi"d;
+        msgNode.message = "Get ready! 3";
         msgNode.visible = true;
         pause = true;
     };
 
     // todo: use a compile time loop
     enum act2 = () @nogc nothrow {
-        msgNode.message = "Get ready! 2 ğüşi"d;
+        msgNode.message = "Get ready! 2";
     };
 
     enum act3 = () @nogc nothrow {
-        msgNode.message = "Get ready! 1 ğüşi"d;
+        msgNode.message = "Get ready! 1";
     };
 
     enum act4 = () @nogc nothrow {
-        msgNode.message = "Get ready! 0 ğüşi"d;
+        msgNode.message = "Get ready! 0";
     };
 
     enum act5 = () @nogc nothrow {

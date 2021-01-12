@@ -173,3 +173,8 @@ void drawMsgNode(){
     if(msgNode.visible)
         drawText(msgNode.message, charSetMsg, msgNode.pos.x, msgNode.pos.y);
 }
+
+void drawTestUTF8(){
+    auto testStr = "test utf8: ığüşiöçĞÜİŞÇÖ"d;
+    drawText(testStr, charSetScore, 150, SCREEN_HEIGHT - FOOTER_HEIGHT + 20);
+}

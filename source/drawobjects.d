@@ -141,14 +141,23 @@ import std.exception: assumeUnique;
 void drawScore(){
     char[10] buffer;
     sprintf(buffer.ptr, "%0.2f %% \0", rate);
-    drawText(assumeUnique(buffer[]), charSetScore, 20, SCREEN_HEIGHT - FOOTER_HEIGHT + 20);
+    
+    import dvector;
+    Dvector!dchar dc;
+    foreach(char c; buffer){
+        dc ~= cast(dchar)c;
+    }
+
+    dstring dstr = assumeUnique(dc[]);
+    drawText(dstr, charSetScore, 20, SCREEN_HEIGHT - FOOTER_HEIGHT + 20);
+    dc.free();
 }
 
 
-void drawText(string str, ref FontSet fs, int x, int y){
+void drawText(ref dstring str, ref FontSet fs, int x, int y){
 
     int accumW;
-    foreach (char c; str){
+    foreach (dchar c; str){
         
         auto cimg = fs[c];
 

@@ -16,7 +16,7 @@
                 "bindbc-opengl": "*",
                 "bindbc-sdl": "~>0.13.0",
                 "dvector": "~>0.0.5",
-                "bcaa": "*",
+                "bcaa": "~>0.0.5",
                 "earcutd": "*",
                 "chipmunkd": "1.0.1+7.0.1",
                 "bettercmath": "*"
@@ -41,7 +41,7 @@
             "dependencies": {
                 "earcutd": "*",
                 "dvector": "~>0.0.5",
-                "bcaa": "*",
+                "bcaa": "~>0.0.5",
                 "bindbc-sdl": "~>0.13.0",
                 "chipmunkd": "1.0.1+7.0.1",
                 "bettercmath": "*"

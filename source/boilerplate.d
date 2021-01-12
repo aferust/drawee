@@ -99,14 +99,24 @@ TTF_Font* getFontWithSize(string path, int size){
 }
 
 FontSet initMemoryFontSet(TTF_Font* ttfFont, Color color){
+    import dvector;
+
+    Dvector!dchar chars;
+
+    foreach(dchar a; ' '..'~'){
+        chars ~= a;
+    }
+
+    dchar[12] trExtra = ['ğ', 'Ğ', 'ü', 'Ü', 'ş', 'Ş', 'ı', 'İ', 'ö', 'Ö', 'ç', 'Ç'];
+    chars.insert(trExtra[], chars.length-1);
+
     FontSet chartSet;
-    foreach(char a; ' '..'~'){
+    foreach(dchar a; chars){
         auto clr = SDL_Color(cast(ubyte)(color[0]*255), cast(ubyte)(color[1]*255),cast(ubyte)(color[2]*255));
         
-        char[2] buff;
-        sprintf(buff.ptr, "%c\0", a);
+        const(char)* da = cast(char*)&a;
         
-        SDL_Surface* texture = TTF_RenderUTF8_Blended(ttfFont, buff.ptr, clr);
+        SDL_Surface* texture = TTF_RenderUTF8_Blended(ttfFont, da, clr);
 
         GLuint textureId;
         glGenTextures(1, &textureId); 
@@ -123,8 +133,10 @@ FontSet initMemoryFontSet(TTF_Font* ttfFont, Color color){
         chartSet[a] = FontInfo(textureId, texture.w, texture.h);
 
         SDL_FreeSurface(texture);
+        
     }
 
+    chars.free;
     return chartSet;
 }
 

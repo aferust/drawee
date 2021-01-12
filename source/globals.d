@@ -67,7 +67,7 @@ __gshared {
     FontSet charSetScore, charSetMsg;
 }
 
-alias FontSet = Bcaa!(char, FontInfo);
+alias FontSet = Bcaa!(dchar, FontInfo);
 
 struct FontInfo {
     GLuint textureId;

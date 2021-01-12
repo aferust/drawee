@@ -9,7 +9,7 @@ struct MsgNode {
 
     bool visible;
 
-    string message;
+    dstring message;
 }
 
 @nogc nothrow:
@@ -18,22 +18,22 @@ void openCeremony(){
     won = false;
     
     enum act1 = () @nogc nothrow {
-        msgNode.message = "Get ready! 3";
+        msgNode.message = "Get ready! 3 ğüşi"d;
         msgNode.visible = true;
         pause = true;
     };
 
     // todo: use a compile time loop
     enum act2 = () @nogc nothrow {
-        msgNode.message = "Get ready! 2";
+        msgNode.message = "Get ready! 2 ğüşi"d;
     };
 
     enum act3 = () @nogc nothrow {
-        msgNode.message = "Get ready! 1";
+        msgNode.message = "Get ready! 1 ğüşi"d;
     };
 
     enum act4 = () @nogc nothrow {
-        msgNode.message = "Get ready! 0";
+        msgNode.message = "Get ready! 0 ğüşi"d;
     };
 
     enum act5 = () @nogc nothrow {

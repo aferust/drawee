@@ -52,8 +52,8 @@ extern (C) int main() {
     textureIdEnemy1 = loadTexture("res/enemy1.png");
     textureIdEnemy2 = loadTexture("res/enemy2.png");
 
-    charSetScore = initMemoryFontSet(getFontWithSize("res/Fontin-Regular.ttf", 30), Color.green);
-    charSetMsg = initMemoryFontSet(getFontWithSize("res/Fontin-Regular.ttf", 60), Color.red);
+    charSetScore = initMemoryFontSet(getFontWithSize("res/Nunito-Regular.ttf", 30), Color.green);
+    charSetMsg = initMemoryFontSet(getFontWithSize("res/Nunito-Regular.ttf", 60), Color.red);
 
     import primitives;
     shaderProgramHero = loadShaderHero();

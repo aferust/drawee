@@ -114,9 +114,7 @@ FontSet initMemoryFontSet(TTF_Font* ttfFont, Color color){
     foreach(dchar a; chars){
         auto clr = SDL_Color(cast(ubyte)(color[0]*255), cast(ubyte)(color[1]*255),cast(ubyte)(color[2]*255));
         
-        const(char)* da = cast(char*)&a;
-        
-        SDL_Surface* texture = TTF_RenderUTF8_Blended(ttfFont, da, clr);
+        SDL_Surface* texture = TTF_RenderUNICODE_Blended(ttfFont, cast(ushort*)&a, clr);
 
         GLuint textureId;
         glGenTextures(1, &textureId); 

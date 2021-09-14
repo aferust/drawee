@@ -11,13 +11,12 @@ Copyright:
 */
 
 import bindbc.sdl;
+import core.stdc.stdio: printf;
 
 version(WebAssembly){
-    import opengl.gl4;
-    import core.stdc.stdio: printf;
+    import opengl.gl4; 
 }else{
     import bindbc.opengl;
-    import core.stdc.stdio: printf;
 }
 
 import dvector;
@@ -167,7 +166,7 @@ extern(C) void mainLoop(void* _win) @nogc nothrow {
     drawObstacles();
     drawScore();
     drawMsgNode();
-    drawTestUTF8();
+    drawTestUnicode();
 
     SDL_GL_SwapWindow(window);
 

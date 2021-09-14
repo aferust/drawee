@@ -16,7 +16,7 @@
                 "bindbc-opengl": "*",
                 "bindbc-sdl": "~>0.13.0",
                 "dvector": "~>0.0.5",
-                "bcaa": "~>0.0.5",
+                "bcaa": "0.0.7",
                 "earcutd": "*",
                 "chipmunkd": "1.0.1+7.0.1",
                 "bettercmath": "*"
@@ -29,7 +29,8 @@
             ],
             "subConfigurations": {
                 "bindbc-sdl": "staticBC",
-                "bindbc-opengl": "dynamicBC"
+                "bindbc-opengl": "dynamicBC",
+                "bcaa": "betterC"
             },
             "libs": ["SDL2", "SDL2_image", "SDL2_ttf", "chipmunk"]
         },
